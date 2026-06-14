@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký — SkillSwap</title>
+  <link rel="stylesheet" href="SPCK.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+</header>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">Tạo tài khoản</h2>
+          <form id="registerForm">
+            <div class="mb-3">
+              <label class="form-label">Họ tên</label>
+              <input type="text" class="form-control" id="reg-name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" id="reg-email" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mật khẩu</label>
+              <input type="password" class="form-control" id="reg-pass" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-3">Đăng ký</button>
+          </form>
+          <p class="text-center mt-3">Đã có tài khoản? <a href="dangnhap.html">Đăng nhập</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="SPCK.js"></script>
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+
+  if (!name || !email || !pass) {
+    showToast('Vui lòng điền đầy đủ thông tin', 'error');
+    return;
+  }
+
+  const uid = 'u_' + Date.now();
+  const user = {
+    uid, name, email,
+    avatar: '👤',
+    xp: 0,
+    level: 1,
+    createdAt: new Date().toISOString()
+  };
+
+  DB.set('user_' + uid, user);
+  Auth.login(user);
+  showToast('🎉 Đăng ký thành công!', 'success');
+  setTimeout(() => window.location.href = 'skill.html', 800);
+});
+</script>
+</body>
+</html>

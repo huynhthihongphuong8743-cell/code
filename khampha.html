@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khám phá Kỹ năng - SkillSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="SPCK.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="SPCK.html">SkillSwap</a>
+      <a href="SPCK.html" class="btn btn-light">← Trang chủ</a>
+    </div>
+  </nav>
+
+  <div style="height: 80px;"></div>
+
+  <div class="container py-5">
+    <h1 class="text-center mb-4">🔍 Khám phá Kỹ năng</h1>
+
+    <div class="position-relative mx-auto" style="max-width: 650px;">
+      <div class="input-group input-group-lg">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" id="searchInput" class="form-control" placeholder="Gõ từ khóa tìm kiếm...">
+        <button class="btn btn-primary px-5" onclick="performSearch()">Tìm</button>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-5" id="skills-grid"></div>
+  </div>
+
+  <script src="SPCK.js"></script>
+  <script>
+    function performSearch() {
+      const term = document.getElementById('searchInput').value.toLowerCase().trim();
+      const allSkills = DB.getAll('skill_');
+
+      let filtered = allSkills;
+      if (term) {
+        filtered = allSkills.filter(s => 
+          (s.title && s.title.toLowerCase().includes(term)) || 
+          (s.desc && s.desc.toLowerCase().includes(term)) ||
+          (s.category && s.category.toLowerCase().includes(term))
+        );
+      }
+
+      const container = document.getElementById('skills-grid');
+      
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-12 text-center py-5">
+          <h4>Không tìm thấy kỹ năng nào</h4>
+          <p class="text-muted">Hãy thử từ khóa khác hoặc đăng kỹ năng mới ở trang "Kỹ năng của tôi"</p>
+        </div>`;
+      } else {
+        container.innerHTML = filtered.map(s => `
+          <div class="col-md-4 col-lg-3">
+            <div class="card h-100">
+              <div class="card-body text-center">
+                <div style="font-size:60px;margin-bottom:15px;">${s.emoji || '📚'}</div>
+                <h5>${s.title}</h5>
+                <span class="badge bg-primary">${s.category}</span>
+                <p class="text-muted mt-2">${s.desc ? s.desc.substring(0, 90) + '...' : ''}</p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Tự động load tất cả khi vào trang
+    window.onload = performSearch;
+  </script>
+</body>
+</html>
+
