@@ -8,213 +8,479 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    body { background: var(--c-navy) !important; color: var(--c-text) !important; }
-    .stat-mini { background: var(--c-glass); border: 1px solid var(--c-border); border-radius: 12px; padding: 20px; text-align: center; }
-    .skill-row-thumb { width: 45px; height: 45px; font-size: 24px; background: var(--c-navy3); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    body { background: #0f172a !important; color: #e2e8f0 !important; }
+    .stat-mini { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; text-align: center; }
+    .stat-mini h3 { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+    .skill-card-table { background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
+    .table { color: #e2e8f0; margin: 0; }
+    .table thead th { background: rgba(79,70,229,0.2); border-color: rgba(255,255,255,0.08); font-weight: 700; padding: 16px; }
+    .table tbody td { border-color: rgba(255,255,255,0.06); padding: 14px 16px; vertical-align: middle; }
+    .table tbody tr:hover { background: rgba(255,255,255,0.04); }
+    .modal-content { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #e2e8f0; }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .modal-footer { border-top: 1px solid rgba(255,255,255,0.1); }
+    .form-control, .form-select { background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.12); color: #e2e8f0; border-radius: 12px; padding: 12px 16px; }
+    .form-control:focus, .form-select:focus { background: rgba(255,255,255,0.08); border-color: #4f46e5; color: #e2e8f0; box-shadow: 0 0 0 3px rgba(79,70,229,0.2); }
+    .form-control::placeholder { color: #64748b; }
+    .form-select option { background: #1e293b; color: #e2e8f0; }
+    .upload-zone { border: 2px dashed rgba(79,70,229,0.5); border-radius: 16px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(79,70,229,0.05); }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: #4f46e5; background: rgba(79,70,229,0.12); }
+    .upload-zone i { font-size: 40px; color: #6366f1; margin-bottom: 12px; }
+    .file-preview { display: flex; align-items: center; gap: 10px; background: rgba(79,70,229,0.1); border-radius: 10px; padding: 10px 14px; margin-top: 10px; }
+    .file-preview .file-name { flex: 1; font-size: 14px; color: #a5b4fc; }
+    .file-preview .remove-file { cursor: pointer; color: #f87171; font-size: 18px; }
+    .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .status-approved { background: rgba(16,217,160,0.15); color: #10d9a0; }
+    .status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .status-rejected { background: rgba(248,113,113,0.15); color: #f87171; }
+    .header-nav { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { color: white; text-decoration: none; margin: 0 12px; font-weight: 600; transition: opacity 0.2s; }
+    .header-nav a:hover { opacity: 0.8; }
+    .progress-bar-xp { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+    #upload-progress { display: none; }
   </style>
 </head>
 <body>
-    <!-- Navbar chung -->
-<header style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-  <h2 style="margin:0; font-size:24px;">SkillSwap</h2>
+
+<header class="header-nav">
+  <h2 style="margin:0;font-size:22px;color:white;font-weight:800;">SkillSwap</h2>
   <nav>
-    <a href="SPCK.html" style="color:white; margin:0 15px; text-decoration:none;">Trang chủ</a>
-    <a href="khampha.html" style="color:white; margin:0 15px; text-decoration:none;">Khám phá</a>
-    <a href="skill.html" style="color:white; margin:0 15px; text-decoration:none;">Kỹ năng của tôi</a>
-    <a href="admin.html" style="color:white; margin:0 15px; text-decoration:none;">Admin</a>
+    <a href="SPCK.html">Trang chủ</a>
+    <a href="khampha.html">Khám phá</a>
+    <a href="skill.html">Kỹ năng của tôi</a>
+    <a href="lienhe.html">Liên hệ</a>
+    <a href="admin.html">Admin</a>
   </nav>
+  <div id="user-header" style="color:white;font-weight:600;font-size:14px;"></div>
 </header>
+
 <div class="container py-5">
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <h1 class="mb-0">Kỹ năng của tôi</h1>
-    <button class="btn btn-primary" onclick="requireAuthThen(openPostModal)">
-      <i class="bi bi-plus-lg me-2"></i>Đăng kỹ năng mới
-    </button>
-  </div>
-
-  <!-- Auth Gate -->
+  <!-- AUTH GATE -->
   <div id="auth-gate" style="display:none;" class="text-center py-5">
-    <h3>Bạn chưa đăng nhập</h3>
-    <a href="dangnhap.html?redirect=skill.html" class="btn btn-primary">Đăng nhập ngay</a>
+    <div style="font-size:80px">🔐</div>
+    <h3 class="mt-3">Bạn chưa đăng nhập</h3>
+    <p class="text-muted">Đăng nhập để quản lý kỹ năng của bạn</p>
+    <a href="dangnhap.html?redirect=skill.html" class="btn btn-primary px-5">Đăng nhập ngay</a>
   </div>
 
-  <!-- Main Content -->
-  <div id="main-content">
-    <div class="row g-3 mb-4">
-      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-total">0</h3><p>Tổng kỹ năng</p></div></div>
-      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-approved" style="color:#10d9a0">0</h3><p>Đã duyệt</p></div></div>
-      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-pending" style="color:#fbbf24">0</h3><p>Chờ duyệt</p></div></div>
-      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-xp" style="color:#0dcaf0">0</h3><p>XP</p></div></div>
+  <!-- MAIN -->
+  <div id="main-content" style="display:none;">
+    <!-- Header row -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h2 class="mb-1 fw-bold">Kỹ năng của tôi</h2>
+        <p class="text-muted mb-0" id="user-welcome">Xin chào!</p>
+      </div>
+      <button class="btn btn-primary px-4 py-2 fw-semibold" onclick="openPostModal()">
+        <i class="bi bi-plus-lg me-2"></i>Đăng kỹ năng mới
+      </button>
     </div>
 
-    <div class="card bs-card">
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-total">0</h3><p class="mb-0 text-muted">Tổng kỹ năng</p></div></div>
+      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-approved" style="color:#10d9a0">0</h3><p class="mb-0 text-muted">Đã duyệt</p></div></div>
+      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-pending" style="color:#fbbf24">0</h3><p class="mb-0 text-muted">Chờ duyệt</p></div></div>
+      <div class="col-6 col-md-3"><div class="stat-mini"><h3 id="stat-xp" style="color:#818cf8">0</h3><p class="mb-0 text-muted">XP tích lũy</p></div></div>
+    </div>
+
+    <!-- Skills table -->
+    <div class="skill-card-table">
       <div class="table-responsive">
-        <table class="table table-hover" id="skills-table">
+        <table class="table table-hover">
           <thead><tr>
-            <th>Emoji</th>
-            <th>Tên kỹ năng</th>
+            <th>Kỹ năng</th>
             <th>Danh mục</th>
+            <th>File</th>
             <th>Trạng thái</th>
-            <th>Ngày</th>
+            <th>Ngày đăng</th>
             <th>Hành động</th>
           </tr></thead>
-          <tbody id="skills-tbody"></tbody>
+          <tbody id="skills-tbody">
+            <tr><td colspan="6" class="text-center py-4 text-muted">Đang tải...</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal Đăng / Sửa -->
+<!-- MODAL ĐĂNG / SỬA -->
 <div class="modal fade" id="postModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modal-title">Đăng kỹ năng mới</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title fw-bold" id="modal-title">Đăng kỹ năng mới</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="edit-id">
         <div class="row g-3">
-          <div class="col-12"><input type="text" id="p-title" class="form-control" placeholder="Tên kỹ năng" required></div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Tên kỹ năng <span class="text-danger">*</span></label>
+            <input type="text" id="p-title" class="form-control" placeholder="VD: Dạy đàn guitar cơ bản">
+          </div>
           <div class="col-md-6">
+            <label class="form-label fw-semibold">Danh mục <span class="text-danger">*</span></label>
             <select id="p-category" class="form-select">
               <option value="">Chọn danh mục</option>
-              <option>Lập trình</option><option>Thiết kế</option><option>Ngoại ngữ</option>
-              <option>Âm nhạc</option><option>Kinh doanh</option><option>Khác</option>
+              <option>Lập trình</option>
+              <option>Thiết kế</option>
+              <option>Ngoại ngữ</option>
+              <option>Âm nhạc</option>
+              <option>Toán học</option>
+              <option>Kinh doanh</option>
+              <option>Khác</option>
             </select>
           </div>
-          <div class="col-md-6"><input type="text" id="p-emoji" class="form-control" value="📚" placeholder="Emoji"></div>
-          <div class="col-12"><textarea id="p-desc" class="form-control" rows="4" placeholder="Mô tả kỹ năng..."></textarea></div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Emoji đại diện</label>
+            <input type="text" id="p-emoji" class="form-control" value="📚" placeholder="Emoji">
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Mô tả kỹ năng <span class="text-danger">*</span></label>
+            <textarea id="p-desc" class="form-control" rows="4" placeholder="Mô tả chi tiết về kỹ năng của bạn..."></textarea>
+          </div>
+
+          <!-- File Upload Zone -->
+          <div class="col-12">
+            <label class="form-label fw-semibold">Tài liệu đính kèm <span class="text-muted">(không bắt buộc)</span></label>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+              <i class="bi bi-cloud-arrow-up d-block"></i>
+              <p class="mb-1 fw-semibold">Kéo thả file vào đây hoặc click để chọn</p>
+              <p class="text-muted small mb-0">PDF, Word, HTML — tối đa 10MB</p>
+            </div>
+            <input type="file" id="file-input" style="display:none" accept=".pdf,.doc,.docx,.html,.jpg,.jpeg,.png,.mp4,.zip" onchange="handleFileSelect(this)">
+            <div id="file-preview-area"></div>
+            <div id="upload-progress" class="mt-2">
+              <div class="d-flex justify-content-between mb-1"><span class="small text-muted">Đang tải lên...</span><span class="small" id="progress-pct">0%</span></div>
+              <div class="progress" style="height:6px;border-radius:3px;"><div class="progress-bar progress-bar-xp" id="progress-bar" style="width:0%"></div></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-        <button class="btn btn-primary" onclick="submitSkill()">Gửi duyệt</button>
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button class="btn btn-primary px-4 fw-semibold" id="submit-btn" onclick="submitSkill()">
+          <span id="submit-text">Gửi duyệt</span>
+          <span id="submit-spinner" class="spinner-border spinner-border-sm ms-2" style="display:none"></span>
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="SPCK.js"></script>
-<script>
-  let bsModal;
-  window.onload = () => {
-    bsModal = new bootstrap.Modal(document.getElementById('postModal'));
-    if (!Auth.currentUser) {
-      document.getElementById('auth-gate').style.display = 'block';
-      document.getElementById('main-content').style.display = 'none';
-    } else {
-      loadStats();
-      loadMySkills();
-    }
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",
+    authDomain: "bibilabu.firebaseapp.com",
+    projectId: "bibilabu",
+    storageBucket: "bibilabu.firebasestorage.app",
+    messagingSenderId: "50186983635",
+    appId: "1:50186983635:web:96bbe6ad497822a6591c26",
   };
 
-  function requireAuthThen(fn) {
-    if (!Auth.currentUser) return location.href = 'dangnhap.html?redirect=skill.html';
-    fn();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  let currentUser = null;
+  let bsModal = null;
+  let selectedFile = null;
+  let existingFileUrl = null; // URL của file đã có sẵn khi đang sửa kỹ năng
+  let fileRemoved = false;    // người dùng có bấm xoá file hiện tại không
+
+  // Helper: escape user-generated text before inserting into innerHTML (chống XSS)
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  function loadStats() {
-    const uid = Auth.currentUser.uid;
-    const skills = DB.getAll('skill_').filter(s => s.authorId === uid);
-    document.getElementById('stat-total').textContent = skills.length;
-    document.getElementById('stat-approved').textContent = skills.filter(s => s.status === 'approved').length;
-    document.getElementById('stat-pending').textContent = skills.filter(s => !s.status || s.status === 'pending').length;
-    document.getElementById('stat-xp').textContent = Auth.currentUser.xp || 0;
+  // ===== AUTH STATE =====
+  onAuthStateChanged(auth, async (firebaseUser) => {
+    if (!firebaseUser) {
+      document.getElementById('auth-gate').style.display = 'block';
+      return;
+    }
+    // Load user data
+    try {
+      const snap = await getDoc(doc(db, 'users', firebaseUser.uid));
+      currentUser = snap.exists() ? { uid: firebaseUser.uid, ...snap.data() } : {
+        uid: firebaseUser.uid, name: firebaseUser.displayName || 'User',
+        email: firebaseUser.email, xp: 0, level: 1
+      };
+    } catch {
+      currentUser = { uid: firebaseUser.uid, name: firebaseUser.displayName || 'User', email: firebaseUser.email, xp: 0, level: 1 };
+    }
+
+    document.getElementById('main-content').style.display = 'block';
+    document.getElementById('user-welcome').textContent = `Xin chào, ${currentUser.name}! 👋`;
+    document.getElementById('user-header').textContent = `${currentUser.name} | XP: ${currentUser.xp || 0}`;
+
+    bsModal = new bootstrap.Modal(document.getElementById('postModal'));
+    await loadMySkills();
+    setupDragDrop();
+  });
+
+  // ===== LOAD SKILLS =====
+  async function loadMySkills() {
+    const tbody = document.getElementById('skills-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Đang tải...</td></tr>';
+
+    try {
+      let snap;
+      try {
+        const q = query(collection(db, 'skills'), where('authorId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+        snap = await getDocs(q);
+      } catch {
+        // Fallback nếu chưa có composite index: lấy tất cả rồi lọc + sắp xếp phía client
+        const qFallback = query(collection(db, 'skills'), where('authorId', '==', currentUser.uid));
+        snap = await getDocs(qFallback);
+      }
+      const skills = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+      // Stats
+      document.getElementById('stat-total').textContent = skills.length;
+      document.getElementById('stat-approved').textContent = skills.filter(s => s.status === 'approved').length;
+      document.getElementById('stat-pending').textContent = skills.filter(s => !s.status || s.status === 'pending').length;
+      document.getElementById('stat-xp').textContent = currentUser.xp || 0;
+
+      if (!skills.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted"><div style="font-size:48px">📭</div><p class="mt-2">Chưa có kỹ năng nào. Hãy đăng kỹ năng đầu tiên!</p></td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = skills.map(s => {
+        const statusClass = s.status === 'approved' ? 'status-approved' : s.status === 'rejected' ? 'status-rejected' : 'status-pending';
+        const statusText = s.status === 'approved' ? '✅ Đã duyệt' : s.status === 'rejected' ? '❌ Từ chối' : '⏳ Chờ duyệt';
+        const date = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString('vi-VN') : '---';
+        const fileIcon = s.fileUrl ? `<a href="${s.fileUrl}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2"><i class="bi bi-paperclip"></i></a>` : '<span class="text-muted">—</span>';
+        return `<tr>
+          <td><strong>${escapeHtml(s.emoji || '📚')} ${escapeHtml(s.title)}</strong><br><small class="text-muted">${escapeHtml((s.desc||'').substring(0,50))}...</small></td>
+          <td><span class="badge bg-secondary">${escapeHtml(s.category)}</span></td>
+          <td>${fileIcon}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td><small>${date}</small></td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="editSkill('${s.id}')"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteSkill('${s.id}', '${s.fileUrl || ''}')"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+    }
   }
 
-  function loadMySkills() {
-    const uid = Auth.currentUser.uid;
-    const skills = DB.getAll('skill_').filter(s => s.authorId === uid)
-      .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // ===== FILE HANDLING =====
+  window.handleFileSelect = (input) => {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { showToast('File quá lớn! Tối đa 10MB', 'error'); return; }
+    selectedFile = file;
+    renderFilePreview(file);
+  };
 
-    let html = '';
-    skills.forEach(s => {
-      const status = s.status === 'approved' ? '✅ Đã duyệt' : s.status === 'rejected' ? '❌ Từ chối' : '⏳ Chờ duyệt';
-      html += `<tr>
-        <td>${s.emoji || '📚'}</td>
-        <td><strong>${s.title}</strong></td>
-        <td>${s.category}</td>
-        <td>${status}</td>
-        <td>${new Date(s.createdAt).toLocaleDateString('vi-VN')}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary me-1" onclick="editSkill('${s.id}')">Sửa</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteSkill('${s.id}')">Xóa</button>
-        </td>
-      </tr>`;
+  function renderFilePreview(file) {
+    const area = document.getElementById('file-preview-area');
+    const ext = file.name.split('.').pop().toLowerCase();
+    const icons = { pdf: '📄', doc: '📝', docx: '📝', jpg: '🖼️', jpeg: '🖼️', png: '🖼️', mp4: '🎬', zip: '📦' };
+    area.innerHTML = `<div class="file-preview mt-2">
+      <span style="font-size:24px">${icons[ext] || '📎'}</span>
+      <span class="file-name">${file.name} <small class="text-muted">(${(file.size/1024).toFixed(1)} KB)</small></span>
+      <span class="remove-file" onclick="removeFile()"><i class="bi bi-x-circle-fill"></i></span>
+    </div>`;
+  }
+
+  window.removeFile = () => {
+    selectedFile = null;
+    if (existingFileUrl) fileRemoved = true;
+    document.getElementById('file-preview-area').innerHTML = '';
+    document.getElementById('file-input').value = '';
+  };
+
+  function setupDragDrop() {
+    const zone = document.getElementById('upload-zone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) { selectedFile = file; renderFilePreview(file); }
     });
-    document.getElementById('skills-tbody').innerHTML = html || '<tr><td colspan="6" class="text-center py-4">Chưa có kỹ năng nào</td></tr>';
   }
 
-  function openPostModal() {
+  async function uploadFile(file, skillId) {
+    return new Promise((resolve, reject) => {
+      const storageRef = ref(storage, `skills/${skillId}/${file.name}`);
+      const task = uploadBytesResumable(storageRef, file);
+
+      document.getElementById('upload-progress').style.display = 'block';
+      task.on('state_changed',
+        snap => {
+          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+          document.getElementById('progress-bar').style.width = pct + '%';
+          document.getElementById('progress-pct').textContent = pct + '%';
+        },
+        reject,
+        async () => {
+          const url = await getDownloadURL(task.snapshot.ref);
+          document.getElementById('upload-progress').style.display = 'none';
+          resolve(url);
+        }
+      );
+    });
+  }
+
+  // ===== MODAL =====
+  window.openPostModal = () => {
     document.getElementById('edit-id').value = '';
     document.getElementById('modal-title').textContent = 'Đăng kỹ năng mới';
     document.getElementById('p-title').value = '';
     document.getElementById('p-desc').value = '';
+    document.getElementById('p-emoji').value = '📚';
+    document.getElementById('p-category').value = '';
+    existingFileUrl = null;
+    fileRemoved = false;
+    removeFile();
     bsModal.show();
-  }
+  };
 
-  function editSkill(id) {
-    const skill = DB.get('skill_' + id);
-    if (!skill) return;
+  window.editSkill = async (id) => {
+    const snap = await getDoc(doc(db, 'skills', id));
+    if (!snap.exists()) return;
+    const s = snap.data();
     document.getElementById('edit-id').value = id;
     document.getElementById('modal-title').textContent = 'Chỉnh sửa kỹ năng';
-    document.getElementById('p-title').value = skill.title;
-    document.getElementById('p-category').value = skill.category;
-    document.getElementById('p-emoji').value = skill.emoji || '📚';
-    document.getElementById('p-desc').value = skill.desc;
-    bsModal.show();
-  }
+    document.getElementById('p-title').value = s.title;
+    document.getElementById('p-category').value = s.category;
+    document.getElementById('p-emoji').value = s.emoji || '📚';
+    document.getElementById('p-desc').value = s.desc;
 
-  function submitSkill() {
+    // Reset trạng thái file trước khi nạp dữ liệu mới, tránh dính file đã chọn từ lần trước
+    selectedFile = null;
+    document.getElementById('file-input').value = '';
+    fileRemoved = false;
+    existingFileUrl = s.fileUrl || null;
+
+    if (s.fileUrl) {
+      document.getElementById('file-preview-area').innerHTML = `<div class="file-preview mt-2">
+        <span style="font-size:24px">📎</span>
+        <span class="file-name"><a href="${s.fileUrl}" target="_blank" class="text-info">${escapeHtml(s.fileName || 'File hiện tại')}</a></span>
+        <span class="remove-file" onclick="removeFile()"><i class="bi bi-x-circle-fill"></i></span>
+      </div>`;
+    } else {
+      document.getElementById('file-preview-area').innerHTML = '';
+    }
+    bsModal.show();
+  };
+
+  window.submitSkill = async () => {
     const id = document.getElementById('edit-id').value;
     const title = document.getElementById('p-title').value.trim();
     const category = document.getElementById('p-category').value;
     const emoji = document.getElementById('p-emoji').value || '📚';
     const desc = document.getElementById('p-desc').value.trim();
 
-    if (!title || !category || !desc) {
-      showToast('Vui lòng điền đầy đủ thông tin', 'error');
-      return;
+    if (!title || !category || !desc) { showToast('Vui lòng điền đầy đủ thông tin', 'error'); return; }
+
+    const btn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('submit-spinner');
+    const btnText = document.getElementById('submit-text');
+    btn.disabled = true; spinner.style.display = 'inline-block'; btnText.textContent = 'Đang lưu...';
+
+    try {
+      let fileUrl = null;
+      let fileName = null;
+
+      if (id) {
+        // Edit
+        const skillRef = doc(db, 'skills', id);
+        const updateData = { title, category, emoji, desc, status: 'pending', updatedAt: serverTimestamp() };
+        if (selectedFile) {
+          fileUrl = await uploadFile(selectedFile, id);
+          updateData.fileUrl = fileUrl;
+          updateData.fileName = selectedFile.name;
+        } else if (fileRemoved) {
+          // Người dùng đã bấm xoá file cũ và không chọn file mới
+          updateData.fileUrl = null;
+          updateData.fileName = null;
+        }
+        await updateDoc(skillRef, updateData);
+        showToast('✅ Đã cập nhật kỹ năng!', 'success');
+      } else {
+        // New
+        const newId = 's_' + Date.now();
+        const skillData = {
+          id: newId, title, category, emoji, desc,
+          authorId: currentUser.uid,
+          authorName: currentUser.name,
+          status: 'pending',
+          createdAt: serverTimestamp()
+        };
+        if (selectedFile) {
+          fileUrl = await uploadFile(selectedFile, newId);
+          skillData.fileUrl = fileUrl;
+          skillData.fileName = selectedFile.name;
+        }
+        await setDoc(doc(db, 'skills', newId), skillData);
+
+        // XP - dùng merge để không lỗi nếu document user chưa tồn tại
+        const newXp = (currentUser.xp || 0) + 50;
+        currentUser.xp = newXp;
+        await setDoc(doc(db, 'users', currentUser.uid), { xp: newXp }, { merge: true });
+        document.getElementById('user-header').textContent = `${currentUser.name} | XP: ${newXp}`;
+        showToast('✅ Đăng kỹ năng thành công! (+50 XP)', 'success');
+      }
+
+      bsModal.hide();
+      selectedFile = null;
+      existingFileUrl = null;
+      fileRemoved = false;
+      await loadMySkills();
+    } catch (e) {
+      showToast('Lỗi: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false; spinner.style.display = 'none'; btnText.textContent = 'Gửi duyệt';
     }
+  };
 
-    if (id) {
-      // Edit
-      const skill = DB.get('skill_' + id);
-      Object.assign(skill, {title, category, emoji, desc, status: 'pending', updatedAt: new Date().toISOString()});
-      DB.set('skill_' + id, skill);
-      showToast('Đã cập nhật kỹ năng!', 'success');
-    } else {
-      // New
-      const newId = 's_' + Date.now();
-      DB.set('skill_' + newId, {
-        id: newId,
-        title, category, emoji, desc,
-        authorId: Auth.currentUser.uid,
-        authorName: Auth.currentUser.name,
-        status: 'pending',
-        createdAt: new Date().toISOString()
-      });
-      Auth.currentUser.xp = (Auth.currentUser.xp || 0) + 50;
-      DB.set('user_' + Auth.currentUser.uid, Auth.currentUser);
-      showToast('✅ Đăng kỹ năng thành công! (+50 XP)', 'success');
-    }
-
-    bsModal.hide();
-    loadMySkills();
-    loadStats();
-  }
-
-  function deleteSkill(id) {
-    if (confirm('Xóa kỹ năng này?')) {
-      DB.remove('skill_' + id);
-      loadMySkills();
-      loadStats();
+  window.deleteSkill = async (id, fileUrl) => {
+    if (!confirm('Xóa kỹ năng này? Hành động không thể hoàn tác.')) return;
+    try {
+      await deleteDoc(doc(db, 'skills', id));
+      if (fileUrl) {
+        try {
+          // Parse storage path từ download URL (dạng: .../o/skills%2F...?alt=media...)
+          const storagePath = decodeURIComponent(fileUrl.split('/o/')[1]?.split('?')[0] || '');
+          if (storagePath) await deleteObject(ref(storage, storagePath));
+        } catch {}
+      }
       showToast('Đã xóa kỹ năng', 'info');
+      await loadMySkills();
+    } catch (e) {
+      showToast('Lỗi xóa: ' + e.message, 'error');
     }
-  }
+  };
+
+  // Toast
+  window.showToast = (msg, type = 'info') => {
+    document.querySelectorAll('.ss-toast').forEach(t => t.remove());
+    const toast = document.createElement('div');
+    toast.className = 'ss-toast';
+    const colors = { success: '#10d9a0', error: '#f87171', warn: '#fbbf24', info: '#6366f1' };
+    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:14px 24px;border-radius:14px;color:white;z-index:99999;font-weight:600;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:${colors[type]||colors.info};`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity 0.4s'; setTimeout(()=>toast.remove(),400); }, 3000);
+  };
 </script>
 </body>
 </html>

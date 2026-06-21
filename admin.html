@@ -7,88 +7,543 @@
   <link rel="stylesheet" href="SPCK.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .admin-login { min-height: 100vh; display: flex; align-items: center; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+    .login-card { background: white; border-radius: 24px; padding: 48px 40px; max-width: 420px; width: 100%; box-shadow: 0 40px 80px rgba(0,0,0,0.3); }
+    .login-card h4 { color: #1e293b; font-weight: 800; }
+    .login-card .form-control { border-radius: 12px; padding: 12px 16px; }
+    .admin-panel { display: none; }
+    .admin-header { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+    .admin-header h2 { color: white; margin: 0; font-weight: 800; }
+    .tab-nav { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0 32px; display: flex; gap: 0; }
+    .tab-btn { padding: 16px 24px; color: #94a3b8; font-weight: 600; cursor: pointer; border: none; background: transparent; border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 15px; }
+    .tab-btn.active { color: #818cf8; border-bottom-color: #6366f1; }
+    .tab-btn:hover { color: #e2e8f0; }
+    .tab-content-panel { display: none; padding: 32px; }
+    .tab-content-panel.active { display: block; }
+    .admin-table-wrap { background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
+    .table { color: #e2e8f0; margin: 0; }
+    .table thead th { background: rgba(79,70,229,0.2); border-color: rgba(255,255,255,0.08); font-weight: 700; padding: 16px; }
+    .table tbody td { border-color: rgba(255,255,255,0.06); padding: 14px 16px; vertical-align: middle; }
+    .table tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .stat-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; text-align: center; }
+    .stat-box h3 { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+    /* Detail Modal */
+    .modal-content { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #e2e8f0; }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .detail-section { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+    .detail-section label { font-size: 11px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+    .support-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+    .support-card .support-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .support-meta { font-size: 13px; color: #64748b; }
+    .priority-high { border-left: 4px solid #f87171; }
+    .priority-normal { border-left: 4px solid #6366f1; }
+    .badge-status { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+    .s-open { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .s-resolved { background: rgba(16,217,160,0.2); color: #10d9a0; }
+  </style>
 </head>
 <body>
-<div class="container py-5">
-  <h1 class="mb-4">🔧 Admin Panel</h1>
 
-  <!-- Login -->
-  <div id="login-panel">
-    <div class="card mx-auto" style="max-width:400px">
-      <div class="card-body p-5">
-        <h4 class="text-center">Đăng nhập Admin</h4>
-        <input type="email" id="admin-email" class="form-control mb-3" value="admin@skillswap.vn" placeholder="Email">
-        <input type="password" id="admin-pass" class="form-control mb-4" value="admin2026" placeholder="Mật khẩu">
-        <button class="btn btn-danger w-100" onclick="adminLogin()">Đăng nhập</button>
+<!-- LOGIN -->
+<div class="admin-login" id="login-panel">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="login-card mx-auto">
+          <div class="text-center mb-4">
+            <div style="font-size:48px">🔧</div>
+            <h4 class="mt-2">Admin Panel</h4>
+            <p class="text-muted small">SkillSwap Administration</p>
+          </div>
+          <div id="login-err" class="alert alert-danger d-none"></div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Email Admin</label>
+            <input type="email" id="admin-email" class="form-control" placeholder="Email">
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold text-dark">Mật khẩu</label>
+            <input type="password" id="admin-pass" class="form-control" placeholder="Mật khẩu">
+          </div>
+          <button class="btn btn-danger w-100 py-3 fw-bold" onclick="adminLogin()">Đăng nhập Admin</button>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Dashboard -->
-  <div id="admin-panel" style="display:none;">
-    <button class="btn btn-outline-danger mb-4" onclick="adminLogout()">Đăng xuất</button>
-    
-    <h3>Kỹ năng chờ duyệt</h3>
-    <div class="table-responsive">
-      <table class="table table-hover" id="admin-table">
-        <thead><tr><th>Tiêu đề</th><th>Tác giả</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
-        <tbody id="admin-tbody"></tbody>
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="admin-panel">
+  <!-- Header -->
+  <div class="admin-header">
+    <h2>🔧 Admin Panel</h2>
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-white-50" id="admin-stats-header"></span>
+      <button class="btn btn-outline-light btn-sm" onclick="adminLogout()"><i class="bi bi-box-arrow-right me-1"></i>Đăng xuất</button>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="container-fluid px-4 py-3">
+    <div class="row g-3" id="admin-stats-row"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('skills', this)"><i class="bi bi-hourglass-split me-2"></i>Kỹ năng chờ duyệt <span class="badge bg-warning text-dark ms-1" id="pending-badge">0</span></button>
+    <button class="tab-btn" onclick="switchTab('approved', this)"><i class="bi bi-check-circle me-2"></i>Đã duyệt</button>
+    <button class="tab-btn" onclick="switchTab('support', this)"><i class="bi bi-headset me-2"></i>Yêu cầu hỗ trợ <span class="badge bg-danger ms-1" id="support-badge">0</span></button>
+    <button class="tab-btn" onclick="switchTab('users', this)"><i class="bi bi-people me-2"></i>Người dùng</button>
+  </div>
+
+  <!-- Tab: Kỹ năng chờ duyệt -->
+  <div class="tab-content-panel active" id="tab-skills">
+    <div class="admin-table-wrap">
+      <table class="table table-hover">
+        <thead><tr>
+          <th>Kỹ năng</th><th>Tác giả</th><th>Danh mục</th><th>File</th><th>Ngày gửi</th><th>Hành động</th>
+        </tr></thead>
+        <tbody id="pending-tbody">
+          <tr><td colspan="6" class="text-center py-4 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Đang tải...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tab: Đã duyệt -->
+  <div class="tab-content-panel" id="tab-approved">
+    <div class="admin-table-wrap">
+      <table class="table table-hover">
+        <thead><tr>
+          <th>Kỹ năng</th><th>Tác giả</th><th>Danh mục</th><th>Ngày duyệt</th><th>Hành động</th>
+        </tr></thead>
+        <tbody id="approved-tbody">
+          <tr><td colspan="5" class="text-center py-4 text-muted">Đang tải...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tab: Yêu cầu hỗ trợ -->
+  <div class="tab-content-panel" id="tab-support">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0 fw-bold">Yêu cầu hỗ trợ từ người dùng</h5>
+      <button class="btn btn-sm btn-outline-secondary" onclick="loadSupportRequests()"><i class="bi bi-arrow-clockwise me-1"></i>Làm mới</button>
+    </div>
+    <div id="support-list">
+      <div class="text-center py-4 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Đang tải...</div>
+    </div>
+  </div>
+
+  <!-- Tab: Người dùng -->
+  <div class="tab-content-panel" id="tab-users">
+    <div class="admin-table-wrap">
+      <table class="table">
+        <thead><tr><th>Tên</th><th>Email</th><th>XP</th><th>Ngày tạo</th></tr></thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="4" class="text-center py-4 text-muted">Đang tải...</td></tr>
+        </tbody>
       </table>
     </div>
   </div>
 </div>
 
+<!-- SKILL DETAIL MODAL -->
+<div class="modal fade" id="skillDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="sdm-title">Chi tiết kỹ năng</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="sdm-body">
+        <div class="text-center" id="sdm-emoji" style="font-size:64px;padding:16px 0;"></div>
+        <div class="detail-section">
+          <label>Tên kỹ năng</label>
+          <p id="sdm-skill-title" class="mb-0 fw-bold fs-5"></p>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="detail-section">
+              <label>Danh mục</label>
+              <p id="sdm-category" class="mb-0"></p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-section">
+              <label>Tác giả</label>
+              <p id="sdm-author" class="mb-0"></p>
+            </div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <label>Mô tả</label>
+          <p id="sdm-desc" class="mb-0" style="white-space:pre-wrap;line-height:1.8;"></p>
+        </div>
+        <div class="detail-section" id="sdm-file-section" style="display:none;">
+          <label>Tài liệu đính kèm</label>
+          <a id="sdm-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm"><i class="bi bi-download me-1"></i>Tải xuống</a>
+        </div>
+      </div>
+      <div class="modal-footer" id="sdm-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPORT DETAIL MODAL -->
+<div class="modal fade" id="supportDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Chi tiết yêu cầu hỗ trợ</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="support-detail-body"></div>
+      <div class="modal-footer" id="support-detail-actions"></div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="SPCK.js"></script>
-<script>
-  function adminLogin() {
-    if (document.getElementById('admin-email').value === 'admin@skillswap.vn' && 
-        document.getElementById('admin-pass').value === 'admin2026') {
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, getDocs, getDoc, doc, collection, query, where, orderBy, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",
+    authDomain: "bibilabu.firebaseapp.com",
+    projectId: "bibilabu",
+    storageBucket: "bibilabu.firebasestorage.app",
+    messagingSenderId: "50186983635",
+    appId: "1:50186983635:web:96bbe6ad497822a6591c26",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let skillDetailModal, supportDetailModal;
+  let pendingSkills = [], approvedSkills = [];
+
+  // Helper: escape user-generated text before inserting into innerHTML (chống XSS)
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // ===== LOGIN =====
+  window.adminLogin = () => {
+    const email = document.getElementById('admin-email').value;
+    const pass = document.getElementById('admin-pass').value;
+    const err = document.getElementById('login-err');
+    if (email === 'admin@skillswap.vn' && pass === 'admin2026') {
       document.getElementById('login-panel').style.display = 'none';
       document.getElementById('admin-panel').style.display = 'block';
-      loadPendingSkills();
+      skillDetailModal = new bootstrap.Modal(document.getElementById('skillDetailModal'));
+      supportDetailModal = new bootstrap.Modal(document.getElementById('supportDetailModal'));
+      loadAdminData();
     } else {
-      showToast('Sai thông tin admin!', 'error');
+      err.textContent = 'Sai thông tin đăng nhập Admin!';
+      err.classList.remove('d-none');
+    }
+  };
+
+  window.adminLogout = () => {
+    document.getElementById('login-panel').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+  };
+
+  // ===== LOAD ALL =====
+  async function loadAdminData() {
+    await Promise.all([loadPendingSkills(), loadApprovedSkills(), loadSupportRequests(), loadUsers(), loadStats()]);
+  }
+
+  async function loadStats() {
+    try {
+      const [skillsSnap, usersSnap, supportSnap] = await Promise.all([
+        getDocs(collection(db, 'skills')),
+        getDocs(collection(db, 'users')),
+        getDocs(collection(db, 'support_requests'))
+      ]);
+      const allSkills = skillsSnap.docs.map(d => d.data());
+      const pendingCount = allSkills.filter(s => !s.status || s.status === 'pending').length;
+      const approvedCount = allSkills.filter(s => s.status === 'approved').length;
+      const openSupport = supportSnap.docs.filter(d => d.data().status !== 'resolved').length;
+
+      document.getElementById('admin-stats-header').textContent = `${usersSnap.size} users · ${approvedCount} kỹ năng`;
+      document.getElementById('pending-badge').textContent = pendingCount;
+      document.getElementById('support-badge').textContent = openSupport;
+
+      document.getElementById('admin-stats-row').innerHTML = [
+        { icon: '👥', val: usersSnap.size, label: 'Người dùng', color: '#818cf8' },
+        { icon: '📋', val: pendingCount, label: 'Chờ duyệt', color: '#fbbf24' },
+        { icon: '✅', val: approvedCount, label: 'Đã duyệt', color: '#10d9a0' },
+        { icon: '🎧', val: openSupport, label: 'Hỗ trợ mở', color: '#f87171' }
+      ].map(s => `
+        <div class="col-6 col-md-3">
+          <div class="stat-box"><div style="font-size:32px">${s.icon}</div>
+          <h3 style="color:${s.color}">${s.val}</h3><p class="text-muted mb-0">${s.label}</p></div>
+        </div>`).join('');
+    } catch (e) { console.error(e); }
+  }
+
+  async function loadPendingSkills() {
+    const tbody = document.getElementById('pending-tbody');
+    try {
+      let snap;
+      try {
+        const q = query(collection(db, 'skills'), where('status', '==', 'pending'), orderBy('createdAt', 'desc'));
+        snap = await getDocs(q);
+      } catch {
+        // Fallback nếu chưa có composite index: lấy tất cả rồi lọc phía client
+        snap = await getDocs(collection(db, 'skills'));
+      }
+      pendingSkills = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(s => !s.status || s.status === 'pending')
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      if (!pendingSkills.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-muted"><div style="font-size:48px">✅</div><p>Không có kỹ năng nào chờ duyệt</p></td></tr>';
+        return;
+      }
+      tbody.innerHTML = pendingSkills.map(s => {
+        const date = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString('vi-VN') : '---';
+        return `<tr>
+          <td><strong>${escapeHtml(s.emoji || '📚')} ${escapeHtml(s.title)}</strong></td>
+          <td>${escapeHtml(s.authorName || '---')}</td>
+          <td><span class="badge bg-secondary">${escapeHtml(s.category)}</span></td>
+          <td>${s.fileUrl ? `<a href="${escapeHtml(s.fileUrl)}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2"><i class="bi bi-paperclip"></i></a>` : '—'}</td>
+          <td><small>${date}</small></td>
+          <td>
+            <button class="btn btn-sm btn-outline-light me-1 py-0" onclick="viewSkillDetail('${s.id}', 'pending')"><i class="bi bi-eye"></i></button>
+            <button class="btn btn-sm btn-success me-1 py-0" onclick="approveSkill('${s.id}')">Duyệt</button>
+            <button class="btn btn-sm btn-warning py-0" onclick="rejectSkill('${s.id}')">Từ chối</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">${e.message}</td></tr>`;
     }
   }
 
-  function adminLogout() {
-    document.getElementById('login-panel').style.display = 'block';
-    document.getElementById('admin-panel').style.display = 'none';
+  async function loadApprovedSkills() {
+    const tbody = document.getElementById('approved-tbody');
+    try {
+      let snap;
+      try {
+        const q = query(collection(db, 'skills'), where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
+        snap = await getDocs(q);
+      } catch {
+        snap = await getDocs(collection(db, 'skills'));
+      }
+      approvedSkills = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(s => s.status === 'approved')
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      if (!approvedSkills.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Chưa có kỹ năng nào được duyệt</td></tr>';
+        return;
+      }
+      tbody.innerHTML = approvedSkills.map(s => {
+        const date = s.updatedAt?.toDate ? s.updatedAt.toDate().toLocaleDateString('vi-VN') :
+                    s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString('vi-VN') : '---';
+        return `<tr>
+          <td><strong>${escapeHtml(s.emoji || '📚')} ${escapeHtml(s.title)}</strong></td>
+          <td>${escapeHtml(s.authorName || '---')}</td>
+          <td><span class="badge bg-secondary">${escapeHtml(s.category)}</span></td>
+          <td><small>${date}</small></td>
+          <td>
+            <button class="btn btn-sm btn-outline-light me-1 py-0" onclick="viewSkillDetail('${s.id}', 'approved')"><i class="bi bi-eye"></i> Chi tiết</button>
+            <button class="btn btn-sm btn-outline-warning py-0" onclick="rejectSkill('${s.id}')">Ẩn</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">${e.message}</td></tr>`;
+    }
   }
 
-  function loadPendingSkills() {
-    const skills = DB.getAll('skill_').filter(s => s.status === 'pending' || !s.status);
-    let html = '';
-    skills.forEach(s => {
-      html += `<tr>
-        <td>${s.title}</td>
-        <td>${s.authorName}</td>
-        <td>Chờ duyệt</td>
-        <td>
-          <button class="btn btn-success btn-sm me-2" onclick="approveSkill('${s.id}')">Duyệt</button>
-          <button class="btn btn-warning btn-sm" onclick="rejectSkill('${s.id}')">Từ chối</button>
-        </td>
-      </tr>`;
-    });
-    document.getElementById('admin-tbody').innerHTML = html || '<tr><td colspan="4" class="text-center">Không có kỹ năng chờ duyệt</td></tr>';
+  // ===== SKILL ACTIONS =====
+  window.approveSkill = async (id) => {
+    try {
+      await updateDoc(doc(db, 'skills', id), { status: 'approved', updatedAt: serverTimestamp() });
+      showToast('✅ Đã duyệt kỹ năng!', 'success');
+      await loadAdminData();
+    } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+  };
+
+  window.rejectSkill = async (id) => {
+    const reason = prompt('Lý do từ chối (không bắt buộc):') ?? null;
+    if (reason === null) return; // Pressed cancel
+    try {
+      await updateDoc(doc(db, 'skills', id), { status: 'rejected', rejectReason: reason || '', updatedAt: serverTimestamp() });
+      showToast('Đã từ chối kỹ năng', 'warn');
+      await loadAdminData();
+    } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+  };
+
+  window.viewSkillDetail = (id, type) => {
+    const allCached = [...pendingSkills, ...approvedSkills];
+    const s = allCached.find(x => x.id === id);
+    if (!s) return;
+
+    document.getElementById('sdm-emoji').textContent = s.emoji || '📚';
+    document.getElementById('sdm-skill-title').textContent = s.title;
+    document.getElementById('sdm-category').textContent = s.category;
+    document.getElementById('sdm-author').textContent = `${s.authorName || 'Ẩn danh'}`;
+    document.getElementById('sdm-desc').textContent = s.desc || 'Không có mô tả';
+
+    const fileSection = document.getElementById('sdm-file-section');
+    if (s.fileUrl) {
+      fileSection.style.display = 'block';
+      const link = document.getElementById('sdm-file-link');
+      link.href = s.fileUrl;
+      link.innerHTML = `<i class="bi bi-download me-1"></i>${escapeHtml(s.fileName || 'Tải xuống tài liệu')}`;
+    } else {
+      fileSection.style.display = 'none';
+    }
+
+    const actions = document.getElementById('sdm-actions');
+    if (type === 'pending') {
+      actions.innerHTML = `
+        <button class="btn btn-success px-4 fw-semibold" onclick="approveSkill('${s.id}'); bootstrap.Modal.getInstance(document.getElementById('skillDetailModal')).hide()">✅ Duyệt kỹ năng</button>
+        <button class="btn btn-warning px-4 fw-semibold" onclick="rejectSkill('${s.id}'); bootstrap.Modal.getInstance(document.getElementById('skillDetailModal')).hide()">❌ Từ chối</button>`;
+    } else {
+      actions.innerHTML = `<button class="btn btn-outline-warning" onclick="rejectSkill('${s.id}'); bootstrap.Modal.getInstance(document.getElementById('skillDetailModal')).hide()">Ẩn kỹ năng này</button>`;
+    }
+
+    skillDetailModal.show();
+  };
+
+  // ===== SUPPORT REQUESTS =====
+  window.loadSupportRequests = async () => {
+    const list = document.getElementById('support-list');
+    list.innerHTML = '<div class="text-center py-4 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Đang tải...</div>';
+    try {
+      let snap;
+      try {
+        const q = query(collection(db, 'support_requests'), orderBy('createdAt', 'desc'));
+        snap = await getDocs(q);
+      } catch {
+        snap = await getDocs(collection(db, 'support_requests'));
+      }
+      const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+      if (!requests.length) {
+        list.innerHTML = '<div class="text-center py-5 text-muted"><div style="font-size:48px">🎧</div><p>Chưa có yêu cầu hỗ trợ nào</p></div>';
+        return;
+      }
+
+      list.innerHTML = requests.map(r => {
+        const date = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleString('vi-VN') : '---';
+        const isOpen = r.status !== 'resolved';
+        return `<div class="support-card ${r.priority === 'high' ? 'priority-high' : 'priority-normal'}">
+          <div class="support-header">
+            <div>
+              <strong>${escapeHtml(r.subject || 'Không có tiêu đề')}</strong>
+              <div class="support-meta mt-1">
+                <i class="bi bi-person me-1"></i>${escapeHtml(r.name)} · <i class="bi bi-envelope me-1"></i>${escapeHtml(r.email)}
+              </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+              <span class="badge-status ${isOpen ? 's-open' : 's-resolved'}">${isOpen ? '⏳ Mở' : '✅ Đã xử lý'}</span>
+            </div>
+          </div>
+          <p class="text-muted mb-2" style="font-size:14px">${escapeHtml((r.message||'').substring(0, 120))}${r.message?.length > 120 ? '...' : ''}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted"><i class="bi bi-clock me-1"></i>${date}</small>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-light py-0" onclick="viewSupportDetail('${r.id}')"><i class="bi bi-eye me-1"></i>Xem</button>
+              ${isOpen ? `<button class="btn btn-sm btn-outline-success py-0" onclick="resolveSupport('${r.id}')"><i class="bi bi-check me-1"></i>Đã xử lý</button>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      list.innerHTML = `<div class="text-center text-danger py-4">${e.message}</div>`;
+    }
+  };
+
+  window.viewSupportDetail = async (id) => {
+    try {
+      const snap = await getDoc(doc(db, 'support_requests', id));
+      if (!snap.exists()) return;
+      const r = { id: snap.id, ...snap.data() };
+      const date = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleString('vi-VN') : '---';
+      const isOpen = r.status !== 'resolved';
+
+      document.getElementById('support-detail-body').innerHTML = `
+        <div class="detail-section"><label>Tiêu đề</label><p class="mb-0 fw-bold">${escapeHtml(r.subject || 'Không có tiêu đề')}</p></div>
+        <div class="row g-2">
+          <div class="col-6"><div class="detail-section"><label>Người gửi</label><p class="mb-0">${escapeHtml(r.name)}</p></div></div>
+          <div class="col-6"><div class="detail-section"><label>Email</label><p class="mb-0">${escapeHtml(r.email)}</p></div></div>
+        </div>
+        <div class="detail-section"><label>Nội dung</label><p class="mb-0" style="white-space:pre-wrap;line-height:1.8">${escapeHtml(r.message)}</p></div>
+        <div class="detail-section"><label>Thời gian</label><p class="mb-0">${date}</p></div>
+        <div class="detail-section"><label>Trạng thái</label>
+          <span class="badge-status ${isOpen ? 's-open' : 's-resolved'}">${isOpen ? '⏳ Đang mở' : '✅ Đã xử lý'}</span>
+        </div>`;
+
+      document.getElementById('support-detail-actions').innerHTML = isOpen
+        ? `<button class="btn btn-success px-4" onclick="resolveSupport('${r.id}')"><i class="bi bi-check-circle me-1"></i>Đánh dấu đã xử lý</button>`
+        : '<span class="text-muted">Yêu cầu đã được xử lý</span>';
+
+      supportDetailModal.show();
+    } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+  };
+
+  window.resolveSupport = async (id) => {
+    try {
+      await updateDoc(doc(db, 'support_requests', id), { status: 'resolved', resolvedAt: serverTimestamp() });
+      showToast('✅ Đã đánh dấu xử lý!', 'success');
+      const modal = bootstrap.Modal.getInstance(document.getElementById('supportDetailModal'));
+      if (modal) modal.hide();
+      await loadSupportRequests();
+      await loadStats();
+    } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+  };
+
+  // ===== USERS =====
+  async function loadUsers() {
+    const tbody = document.getElementById('users-tbody');
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      const users = snap.docs.map(d => d.data());
+      if (!users.length) { tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Chưa có người dùng</td></tr>'; return; }
+      tbody.innerHTML = users.map(u => {
+        const date = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('vi-VN') : '---';
+        return `<tr>
+          <td><strong>${escapeHtml(u.name || '---')}</strong></td>
+          <td>${escapeHtml(u.email || '---')}</td>
+          <td><span class="badge bg-info">${u.xp || 0} XP</span></td>
+          <td><small>${date}</small></td>
+        </tr>`;
+      }).join('');
+    } catch (e) { tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">${e.message}</td></tr>`; }
   }
 
-  function approveSkill(id) {
-    const skill = DB.get('skill_' + id);
-    skill.status = 'approved';
-    DB.set('skill_' + id, skill);
-    showToast('Đã duyệt kỹ năng!', 'success');
-    loadPendingSkills();
-  }
+  // ===== TABS =====
+  window.switchTab = (tab, el) => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  };
 
-  function rejectSkill(id) {
-    const skill = DB.get('skill_' + id);
-    skill.status = 'rejected';
-    DB.set('skill_' + id, skill);
-    showToast('Đã từ chối kỹ năng', 'warn');
-    loadPendingSkills();
-  }
+  // ===== TOAST =====
+  window.showToast = (msg, type = 'info') => {
+    document.querySelectorAll('.ss-toast').forEach(t => t.remove());
+    const toast = document.createElement('div');
+    toast.className = 'ss-toast';
+    const colors = { success: '#10d9a0', error: '#f87171', warn: '#fbbf24', info: '#6366f1' };
+    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:14px 24px;border-radius:14px;color:white;z-index:99999;font-weight:600;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:${colors[type]||colors.info};`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.4s'; setTimeout(() => toast.remove(), 400); }, 3000);
+  };
+
+  // Enter on login
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('login-panel').style.display !== 'none') adminLogin();
+  });
 </script>
 </body>
 </html>

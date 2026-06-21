@@ -6,64 +6,132 @@
   <title>Đăng ký — SkillSwap</title>
   <link rel="stylesheet" href="SPCK.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+    .auth-card { border-radius: 24px; border: none; box-shadow: 0 30px 80px rgba(0,0,0,0.25); }
+    .auth-card .card-body { padding: 48px 40px; }
+    .brand { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #4f46e5, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .form-control { border-radius: 12px; padding: 14px 16px; border: 1.5px solid #e2e8f0; transition: border-color 0.2s; }
+    .form-control:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
+    .btn-register { background: linear-gradient(135deg, #4f46e5, #7c3aed); border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 16px; }
+    .btn-register:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(79,70,229,0.4); }
+    #loading-spinner { display: none; }
+  </style>
 </head>
-<body class="bg-light">
-</header>
-<div class="container py-5">
+<body>
+<div class="container">
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
-      <div class="card shadow">
-        <div class="card-body p-5">
-          <h2 class="text-center mb-4">Tạo tài khoản</h2>
-          <form id="registerForm">
-            <div class="mb-3">
-              <label class="form-label">Họ tên</label>
-              <input type="text" class="form-control" id="reg-name" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" class="form-control" id="reg-email" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Mật khẩu</label>
-              <input type="password" class="form-control" id="reg-pass" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 py-3">Đăng ký</button>
-          </form>
-          <p class="text-center mt-3">Đã có tài khoản? <a href="dangnhap.html">Đăng nhập</a></p>
+      <div class="card auth-card">
+        <div class="card-body">
+          <div class="text-center mb-4">
+            <div class="brand">SkillSwap</div>
+            <h4 class="mt-2 fw-bold">Tạo tài khoản mới</h4>
+            <p class="text-muted small">Tham gia cộng đồng trao đổi kỹ năng</p>
+          </div>
+
+          <div id="error-msg" class="alert alert-danger d-none rounded-3"></div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Họ tên</label>
+            <input type="text" class="form-control" id="reg-name" placeholder="Nguyễn Văn A" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control" id="reg-email" placeholder="email@example.com" required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Mật khẩu</label>
+            <input type="password" class="form-control" id="reg-pass" placeholder="Tối thiểu 6 ký tự" required>
+          </div>
+
+          <button class="btn btn-primary btn-register w-100 text-white" id="btn-register" onclick="doRegister()">
+            <span id="btn-text">Đăng ký</span>
+            <span id="loading-spinner" class="spinner-border spinner-border-sm ms-2" role="status"></span>
+          </button>
+
+          <p class="text-center mt-4 text-muted">Đã có tài khoản? <a href="dangnhap.html" class="text-primary fw-semibold">Đăng nhập</a></p>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<script src="SPCK.js"></script>
-<script>
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const pass = document.getElementById('reg-pass').value;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  if (!name || !email || !pass) {
-    showToast('Vui lòng điền đầy đủ thông tin', 'error');
-    return;
-  }
-
-  const uid = 'u_' + Date.now();
-  const user = {
-    uid, name, email,
-    avatar: '👤',
-    xp: 0,
-    level: 1,
-    createdAt: new Date().toISOString()
+  const firebaseConfig = {
+    apiKey: "AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",
+    authDomain: "bibilabu.firebaseapp.com",
+    projectId: "bibilabu",
+    storageBucket: "bibilabu.firebasestorage.app",
+    messagingSenderId: "50186983635",
+    appId: "1:50186983635:web:96bbe6ad497822a6591c26",
   };
 
-  DB.set('user_' + uid, user);
-  Auth.login(user);
-  showToast('🎉 Đăng ký thành công!', 'success');
-  setTimeout(() => window.location.href = 'skill.html', 800);
-});
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.doRegister = async () => {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass = document.getElementById('reg-pass').value;
+    const errEl = document.getElementById('error-msg');
+    const btn = document.getElementById('btn-register');
+    const spinner = document.getElementById('loading-spinner');
+    const btnText = document.getElementById('btn-text');
+
+    errEl.classList.add('d-none');
+
+    if (!name || !email || !pass) {
+      errEl.textContent = 'Vui lòng điền đầy đủ thông tin';
+      errEl.classList.remove('d-none'); return;
+    }
+    if (pass.length < 6) {
+      errEl.textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+      errEl.classList.remove('d-none'); return;
+    }
+
+    btn.disabled = true; spinner.style.display = 'inline-block'; btnText.textContent = 'Đang tạo...';
+
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(cred.user, { displayName: name });
+
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        uid: cred.user.uid,
+        name,
+        email,
+        avatar: '👤',
+        xp: 0,
+        level: 1,
+        createdAt: serverTimestamp()
+      });
+
+      // Toast rồi redirect
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:14px 24px;border-radius:14px;background:#10d9a0;color:white;font-weight:700;z-index:9999;font-size:15px;';
+      toast.textContent = '🎉 Đăng ký thành công!';
+      document.body.appendChild(toast);
+      setTimeout(() => window.location.href = 'skill.html', 1000);
+
+    } catch (err) {
+      const msgs = {
+        'auth/email-already-in-use': 'Email này đã được sử dụng',
+        'auth/invalid-email': 'Email không hợp lệ',
+        'auth/weak-password': 'Mật khẩu quá yếu (tối thiểu 6 ký tự)'
+      };
+      errEl.textContent = msgs[err.code] || 'Lỗi: ' + err.message;
+      errEl.classList.remove('d-none');
+      btn.disabled = false; spinner.style.display = 'none'; btnText.textContent = 'Đăng ký';
+    }
+  };
+
+  // Enter key
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
 </script>
 </body>
 </html>

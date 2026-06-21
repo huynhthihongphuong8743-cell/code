@@ -3,76 +3,281 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Khám phá Kỹ năng - SkillSwap</title>
+  <title>Khám phá kỹ năng — SkillSwap</title>
+  <link rel="stylesheet" href="SPCK.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="SPCK.css">
+  <style>
+    body { background: #0f172a; color: #e2e8f0; }
+    .header-nav { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { color: white; text-decoration: none; margin: 0 12px; font-weight: 600; }
+    .header-nav a:hover { opacity: 0.8; }
+    .hero-explore { background: linear-gradient(135deg, rgba(79,70,229,0.3), rgba(124,58,237,0.2)); border-radius: 24px; padding: 48px 32px; margin-bottom: 40px; text-align: center; border: 1px solid rgba(79,70,229,0.3); }
+    .search-bar { max-width: 520px; margin: 0 auto; position: relative; }
+    .search-bar input { background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.15); border-radius: 50px; color: #e2e8f0; padding: 14px 24px 14px 50px; font-size: 16px; width: 100%; transition: all 0.3s; }
+    .search-bar input:focus { outline: none; border-color: #4f46e5; background: rgba(255,255,255,0.12); box-shadow: 0 0 0 3px rgba(79,70,229,0.2); color: #e2e8f0; }
+    .search-bar input::placeholder { color: #64748b; }
+    .search-bar i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #6366f1; font-size: 18px; }
+    .filter-pills { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+    .pill { padding: 8px 20px; border-radius: 50px; border: 1.5px solid rgba(255,255,255,0.15); color: #94a3b8; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; background: transparent; }
+    .pill:hover, .pill.active { background: linear-gradient(135deg, #4f46e5, #7c3aed); border-color: transparent; color: white; }
+    .skill-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 28px 24px; transition: all 0.3s; cursor: pointer; height: 100%; }
+    .skill-card:hover { background: rgba(79,70,229,0.12); border-color: rgba(79,70,229,0.4); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .skill-emoji { font-size: 52px; margin-bottom: 16px; }
+    .skill-card h5 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: white; }
+    .skill-card .desc { color: #94a3b8; font-size: 14px; line-height: 1.6; }
+    .author-chip { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); border-radius: 50px; padding: 6px 14px; font-size: 13px; color: #94a3b8; margin-top: 12px; }
+    .cat-badge { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+    .has-file-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(16,217,160,0.15); color: #10d9a0; border: 1px solid rgba(16,217,160,0.2); }
+    /* Detail Modal */
+    .modal-content { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; color: #e2e8f0; }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .detail-emoji { font-size: 72px; text-align: center; padding: 24px 0 16px; }
+    .detail-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .detail-section { background: rgba(255,255,255,0.04); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+    .detail-section label { font-size: 12px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+    .empty-state { text-align: center; padding: 80px 20px; }
+    .empty-state .icon { font-size: 80px; margin-bottom: 16px; }
+    #skills-grid { min-height: 300px; }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="SPCK.html">SkillSwap</a>
-      <a href="SPCK.html" class="btn btn-light">← Trang chủ</a>
-    </div>
+
+<header class="header-nav">
+  <h2 style="margin:0;font-size:22px;color:white;font-weight:800;">SkillSwap</h2>
+  <nav>
+    <a href="SPCK.html">Trang chủ</a>
+    <a href="khampha.html">Khám phá</a>
+    <a href="skill.html">Kỹ năng của tôi</a>
+    <a href="lienhe.html">Liên hệ</a>
+    <a href="admin.html">Admin</a>
   </nav>
+  <div id="user-header" style="color:white;font-size:14px;font-weight:600;"></div>
+</header>
 
-  <div style="height: 80px;"></div>
-
-  <div class="container py-5">
-    <h1 class="text-center mb-4">🔍 Khám phá Kỹ năng</h1>
-
-    <div class="position-relative mx-auto" style="max-width: 650px;">
-      <div class="input-group input-group-lg">
-        <span class="input-group-text"><i class="bi bi-search"></i></span>
-        <input type="text" id="searchInput" class="form-control" placeholder="Gõ từ khóa tìm kiếm...">
-        <button class="btn btn-primary px-5" onclick="performSearch()">Tìm</button>
-      </div>
+<div class="container py-5">
+  <!-- Hero Search -->
+  <div class="hero-explore">
+    <h1 class="fw-bold mb-2">🔍 Khám phá kỹ năng</h1>
+    <p class="text-muted mb-4">Tìm kiếm và học hỏi từ cộng đồng SkillSwap</p>
+    <div class="search-bar">
+      <i class="bi bi-search"></i>
+      <input type="text" id="search-input" placeholder="Tìm kỹ năng, tác giả...">
     </div>
-
-    <div class="row g-4 mt-5" id="skills-grid"></div>
+    <div class="filter-pills" id="filter-pills">
+      <button class="pill active" onclick="filterCat('', this)">Tất cả</button>
+      <button class="pill" onclick="filterCat('Lập trình', this)">💻 Lập trình</button>
+      <button class="pill" onclick="filterCat('Thiết kế', this)">🎨 Thiết kế</button>
+      <button class="pill" onclick="filterCat('Âm nhạc', this)">🎵 Âm nhạc</button>
+      <button class="pill" onclick="filterCat('Toán học', this)">📐 Toán học</button>
+      <button class="pill" onclick="filterCat('Ngoại ngữ', this)">🌏 Ngoại ngữ</button>
+      <button class="pill" onclick="filterCat('Kinh doanh', this)">💼 Kinh doanh</button>
+      <button class="pill" onclick="filterCat('Khác', this)">✨ Khác</button>
+    </div>
   </div>
 
-  <script src="SPCK.js"></script>
-  <script>
-    function performSearch() {
-      const term = document.getElementById('searchInput').value.toLowerCase().trim();
-      const allSkills = DB.getAll('skill_');
+  <!-- Count -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0"><span id="count-text">Đang tải...</span></p>
+    <div class="d-flex gap-2 align-items-center">
+      <small class="text-muted">Sắp xếp:</small>
+      <select class="form-select form-select-sm" id="sort-select" onchange="renderSkills()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#e2e8f0;border-radius:8px;width:auto;">
+        <option value="newest">Mới nhất</option>
+        <option value="oldest">Cũ nhất</option>
+        <option value="alpha">A → Z</option>
+      </select>
+    </div>
+  </div>
 
-      let filtered = allSkills;
-      if (term) {
-        filtered = allSkills.filter(s => 
-          (s.title && s.title.toLowerCase().includes(term)) || 
-          (s.desc && s.desc.toLowerCase().includes(term)) ||
-          (s.category && s.category.toLowerCase().includes(term))
-        );
-      }
+  <!-- Grid -->
+  <div class="row g-4" id="skills-grid">
+    <div class="col-12 text-center py-5">
+      <span class="spinner-border text-primary me-2"></span>Đang tải kỹ năng...
+    </div>
+  </div>
+</div>
 
-      const container = document.getElementById('skills-grid');
-      
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center py-5">
-          <h4>Không tìm thấy kỹ năng nào</h4>
-          <p class="text-muted">Hãy thử từ khóa khác hoặc đăng kỹ năng mới ở trang "Kỹ năng của tôi"</p>
-        </div>`;
-      } else {
-        container.innerHTML = filtered.map(s => `
-          <div class="col-md-4 col-lg-3">
-            <div class="card h-100">
-              <div class="card-body text-center">
-                <div style="font-size:60px;margin-bottom:15px;">${s.emoji || '📚'}</div>
-                <h5>${s.title}</h5>
-                <span class="badge bg-primary">${s.category}</span>
-                <p class="text-muted mt-2">${s.desc ? s.desc.substring(0, 90) + '...' : ''}</p>
-              </div>
+<!-- DETAIL MODAL -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <div class="detail-emoji" id="detail-emoji">📚</div>
+        <h3 class="text-center fw-bold mb-3" id="detail-title"></h3>
+        <div class="detail-meta justify-content-center" id="detail-meta"></div>
+
+        <div class="detail-section">
+          <label><i class="bi bi-card-text me-1"></i>Mô tả chi tiết</label>
+          <p id="detail-desc" class="mb-0" style="line-height:1.8;white-space:pre-wrap;"></p>
+        </div>
+
+        <div class="detail-section" id="detail-file-section" style="display:none;">
+          <label><i class="bi bi-paperclip me-1"></i>Tài liệu đính kèm</label>
+          <a id="detail-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm">
+            <i class="bi bi-download me-1"></i>Tải xuống tài liệu
+          </a>
+        </div>
+
+        <div class="detail-section">
+          <label><i class="bi bi-person me-1"></i>Tác giả</label>
+          <div class="d-flex align-items-center gap-3">
+            <div style="font-size:36px">👤</div>
+            <div>
+              <div class="fw-bold" id="detail-author"></div>
+              <small class="text-muted" id="detail-date"></small>
             </div>
           </div>
-        `).join('');
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="lienhe.html" class="btn btn-primary px-5 fw-semibold">
+            <i class="bi bi-chat-dots me-2"></i>Liên hệ để trao đổi
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, getDocs, collection, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",
+    authDomain: "bibilabu.firebaseapp.com",
+    projectId: "bibilabu",
+    storageBucket: "bibilabu.firebasestorage.app",
+    messagingSenderId: "50186983635",
+    appId: "1:50186983635:web:96bbe6ad497822a6591c26",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let allSkills = [];
+  let activeCategory = '';
+  let detailModal;
+
+  onAuthStateChanged(auth, (user) => {
+    document.getElementById('user-header').textContent = user ? (user.displayName || user.email) : '';
+  });
+
+  // Helper: escape user-generated text before inserting into innerHTML
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  window.escapeHtml = escapeHtml;
+
+  // Load all approved skills
+  async function loadSkills() {
+    try {
+      let snap;
+      try {
+        // Cách lý tưởng: lọc + sắp xếp ngay trên Firestore (cần composite index status+createdAt)
+        const q = query(collection(db, 'skills'), where('status', '==', 'approved'), orderBy('createdAt', 'desc'));
+        snap = await getDocs(q);
+        allSkills = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (innerErr) {
+        // Fallback: nếu chưa tạo composite index (lỗi "query requires an index"),
+        // lấy hết kỹ năng rồi lọc + sắp xếp ở phía client để trang vẫn hoạt động bình thường
+        console.warn('Fallback: query index chưa sẵn sàng, lọc ở client.', innerErr.message);
+        const allSnap = await getDocs(collection(db, 'skills'));
+        allSkills = allSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+          .filter(s => s.status === 'approved')
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       }
+      window.renderSkills();
+    } catch (e) {
+      document.getElementById('skills-grid').innerHTML = `<div class="col-12 empty-state"><div class="icon">⚠️</div><h4>Không thể tải dữ liệu</h4><p class="text-muted">${escapeHtml(e.message)}</p></div>`;
+    }
+  }
+
+  window.filterCat = (cat, el) => {
+    activeCategory = cat;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    renderSkills();
+  };
+
+  window.renderSkills = () => {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    const sort = document.getElementById('sort-select').value;
+
+    let filtered = allSkills.filter(s => {
+      const matchCat = !activeCategory || s.category === activeCategory;
+      const matchSearch = !search ||
+        (s.title || '').toLowerCase().includes(search) ||
+        (s.desc || '').toLowerCase().includes(search) ||
+        (s.authorName || '').toLowerCase().includes(search);
+      return matchCat && matchSearch;
+    });
+
+    if (sort === 'alpha') filtered.sort((a, b) => (a.title||'').localeCompare(b.title||''));
+    else if (sort === 'oldest') filtered.sort((a, b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
+    else filtered.sort((a, b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0)); // newest (mặc định)
+
+    document.getElementById('count-text').textContent = `Tìm thấy ${filtered.length} kỹ năng`;
+    const grid = document.getElementById('skills-grid');
+
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="col-12 empty-state"><div class="icon">🔍</div><h4>Không tìm thấy kỹ năng nào</h4><p class="text-muted">Thử tìm với từ khóa khác</p></div>`;
+      return;
     }
 
-    // Tự động load tất cả khi vào trang
-    window.onload = performSearch;
-  </script>
+    grid.innerHTML = filtered.map(s => `
+      <div class="col-md-4 col-lg-3">
+        <div class="skill-card" onclick="openDetail('${s.id}')">
+          <div class="skill-emoji">${escapeHtml(s.emoji || '📚')}</div>
+          <div class="d-flex gap-2 mb-2 flex-wrap">
+            <span class="cat-badge">${escapeHtml(s.category)}</span>
+            ${s.fileUrl ? '<span class="has-file-badge"><i class="bi bi-paperclip"></i> Có tài liệu</span>' : ''}
+          </div>
+          <h5>${escapeHtml(s.title)}</h5>
+          <p class="desc">${escapeHtml((s.desc||'').substring(0, 100))}${s.desc?.length > 100 ? '...' : ''}</p>
+          <div class="author-chip"><span>👤</span><span>${escapeHtml(s.authorName || 'Ẩn danh')}</span></div>
+        </div>
+      </div>`).join('');
+  };
+
+  window.openDetail = (id) => {
+    const s = allSkills.find(x => x.id === id);
+    if (!s) return;
+    document.getElementById('detail-emoji').textContent = s.emoji || '📚';
+    document.getElementById('detail-title').textContent = s.title;
+    document.getElementById('detail-desc').textContent = s.desc || 'Không có mô tả';
+    document.getElementById('detail-author').textContent = s.authorName || 'Ẩn danh';
+    const date = s.createdAt?.toDate ? s.createdAt.toDate().toLocaleDateString('vi-VN') : '---';
+    document.getElementById('detail-date').textContent = 'Đăng ngày ' + date;
+
+    const meta = document.getElementById('detail-meta');
+    meta.innerHTML = `<span class="cat-badge">${escapeHtml(s.category)}</span>
+      ${s.fileUrl ? '<span class="has-file-badge"><i class="bi bi-paperclip me-1"></i>Có tài liệu</span>' : ''}
+      <span class="badge bg-success">✅ Đã duyệt</span>`;
+
+    const fileSection = document.getElementById('detail-file-section');
+    if (s.fileUrl) {
+      fileSection.style.display = 'block';
+      document.getElementById('detail-file-link').href = s.fileUrl;
+      document.getElementById('detail-file-link').textContent = '⬇️ Tải xuống: ' + (s.fileName || 'tài liệu');
+    } else {
+      fileSection.style.display = 'none';
+    }
+
+    if (!detailModal) detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+    detailModal.show();
+  };
+
+  // Search
+  document.getElementById('search-input').addEventListener('input', () => renderSkills());
+
+  loadSkills();
+</script>
 </body>
 </html>
-
