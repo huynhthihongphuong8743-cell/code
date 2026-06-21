@@ -45,7 +45,7 @@
 <header class="header-nav">
   <h2 style="margin:0;font-size:22px;color:white;font-weight:800;">SkillSwap</h2>
   <nav>
-    <a href="SPCK.html">Trang chủ</a>
+    <a href="index.html">Trang chủ</a>
     <a href="khampha.html">Khám phá</a>
     <a href="skill.html">Kỹ năng của tôi</a>
     <a href="lienhe.html">Liên hệ</a>
@@ -160,7 +160,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button class="btn btn-outline-secondary" onclick="cancelUploadIfAny()" data-bs-dismiss="modal">Hủy</button>
         <button class="btn btn-primary px-4 fw-semibold" id="submit-btn" onclick="submitSkill()">
           <span id="submit-text">Gửi duyệt</span>
           <span id="submit-spinner" class="spinner-border spinner-border-sm ms-2" style="display:none"></span>
@@ -196,6 +196,7 @@
   let selectedFile = null;
   let existingFileUrl = null; // URL của file đã có sẵn khi đang sửa kỹ năng
   let fileRemoved = false;    // người dùng có bấm xoá file hiện tại không
+  let currentUploadTask = null; // theo dõi upload Storage đang chạy để có thể huỷ
 
   // Helper: escape user-generated text before inserting into innerHTML (chống XSS)
   function escapeHtml(str) {
@@ -321,25 +322,70 @@
     return new Promise((resolve, reject) => {
       const storageRef = ref(storage, `skills/${skillId}/${file.name}`);
       const task = uploadBytesResumable(storageRef, file);
+      currentUploadTask = task;
 
       document.getElementById('upload-progress').style.display = 'block';
+      document.getElementById('progress-bar').style.width = '0%';
+      document.getElementById('progress-pct').textContent = '0%';
+
+      // Firebase Storage SDK tự retry âm thầm tới ~10 phút khi gặp lỗi mạng/CORS,
+      // khiến UI có thể "treo ở 0%" mà không báo lỗi gì. Đặt timeout để báo lỗi sớm và rõ ràng.
+      let gotProgress = false;
+      const stallTimer = setTimeout(() => {
+        if (!gotProgress) {
+          task.cancel();
+          reject(new Error('Không nhận được phản hồi từ Storage sau 20s. Có thể do: Firebase Storage chưa được khởi tạo cho project, trình chặn quảng cáo/extension đang chặn request, hoặc lỗi CORS/mạng. Hãy mở DevTools (F12) → tab Network để kiểm tra, hoặc thử ở cửa sổ ẩn danh.'));
+        }
+      }, 20000);
+
       task.on('state_changed',
         snap => {
-          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+          gotProgress = true;
+          clearTimeout(stallTimer);
+          const pct = snap.totalBytes ? Math.round(snap.bytesTransferred / snap.totalBytes * 100) : 0;
           document.getElementById('progress-bar').style.width = pct + '%';
           document.getElementById('progress-pct').textContent = pct + '%';
         },
-        reject,
+        err => {
+          clearTimeout(stallTimer);
+          currentUploadTask = null;
+          console.error('Lỗi upload Storage:', err.code, err.message);
+          const friendlyMsg = {
+            'storage/unauthorized': 'Không có quyền tải file lên (kiểm tra Storage Security Rules).',
+            'storage/canceled': 'Đã huỷ tải file lên.',
+            'storage/quota-exceeded': 'Storage đã hết dung lượng.',
+            'storage/retry-limit-exceeded': 'Tải file quá lâu / mất mạng, vui lòng thử lại.',
+            'storage/unknown': 'Lỗi không xác định khi tải file (thường do mạng hoặc CORS). Kiểm tra tab Network (F12).'
+          }[err.code];
+          reject(new Error(friendlyMsg || err.message));
+        },
         async () => {
-          const url = await getDownloadURL(task.snapshot.ref);
-          document.getElementById('upload-progress').style.display = 'none';
-          resolve(url);
+          clearTimeout(stallTimer);
+          currentUploadTask = null;
+          try {
+            const url = await getDownloadURL(task.snapshot.ref);
+            document.getElementById('upload-progress').style.display = 'none';
+            resolve(url);
+          } catch (e) { reject(e); }
         }
       );
     });
   }
 
   // ===== MODAL =====
+  window.cancelUploadIfAny = () => {
+    if (currentUploadTask) {
+      currentUploadTask.cancel();
+      currentUploadTask = null;
+    }
+    const btn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('submit-spinner');
+    const btnText = document.getElementById('submit-text');
+    if (btn) btn.disabled = false;
+    if (spinner) spinner.style.display = 'none';
+    if (btnText) btnText.textContent = 'Gửi duyệt';
+  };
+
   window.openPostModal = () => {
     document.getElementById('edit-id').value = '';
     document.getElementById('modal-title').textContent = 'Đăng kỹ năng mới';
@@ -349,6 +395,9 @@
     document.getElementById('p-category').value = '';
     existingFileUrl = null;
     fileRemoved = false;
+    document.getElementById('upload-progress').style.display = 'none';
+    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('progress-pct').textContent = '0%';
     removeFile();
     bsModal.show();
   };
@@ -369,6 +418,9 @@
     document.getElementById('file-input').value = '';
     fileRemoved = false;
     existingFileUrl = s.fileUrl || null;
+    document.getElementById('upload-progress').style.display = 'none';
+    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('progress-pct').textContent = '0%';
 
     if (s.fileUrl) {
       document.getElementById('file-preview-area').innerHTML = `<div class="file-preview mt-2">

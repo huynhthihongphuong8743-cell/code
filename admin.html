@@ -540,7 +540,7 @@
     setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.4s'; setTimeout(() => toast.remove(), 400); }, 3000);
   };
 
-  // Enter on login
+  // Enter on login!
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && document.getElementById('login-panel').style.display !== 'none') adminLogin();
   });

@@ -157,7 +157,7 @@ window.logout = async () => {
   if (confirm('Đăng xuất?')) {
     await signOut(auth);
     window.Auth.currentUser = null;
-    window.location.href = 'SPCK.html';
+    window.location.href = 'index.html';
   }
 };
 
