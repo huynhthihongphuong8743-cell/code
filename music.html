@@ -6,56 +6,312 @@
   <title>Âm Nhạc - SkillSwap</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="SPCK.css">
+  <style>
+    :root { --amber: #f59e0b; --red: #ef4444; }
+    body { background: #12060a; color: #e2e8f0; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
+
+    .header-nav { background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: 600; }
+    .header-nav a:hover { opacity: 0.8; }
+
+    /* HERO — concert stage feel */
+    .hero-stage { border-radius: 24px; padding: 0; margin-bottom: 36px; overflow: hidden; position: relative; border: 1px solid rgba(245,158,11,0.2); }
+    .stage-lights { background: linear-gradient(180deg, #1a0520 0%, #0f0016 40%, #180808 100%); padding: 48px 32px 36px; text-align: center; position: relative; }
+    .stage-lights::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 300px; height: 200px; background: radial-gradient(ellipse, rgba(245,158,11,0.15) 0%, transparent 70%); pointer-events: none; }
+    .stage-lights::after { content: ''; position: absolute; top: 0; left: 25%; width: 200px; height: 160px; background: radial-gradient(ellipse, rgba(239,68,68,0.1) 0%, transparent 70%); pointer-events: none; }
+
+    /* WAVEFORM decorative */
+    .waveform { display: flex; align-items: center; justify-content: center; gap: 3px; height: 40px; margin: 16px 0 8px; }
+    .wave-bar { width: 4px; border-radius: 2px; background: linear-gradient(180deg, #f59e0b, #ef4444); animation: wavePulse 1.2s ease-in-out infinite; }
+    .wave-bar:nth-child(1){height:20%;animation-delay:0s;}
+    .wave-bar:nth-child(2){height:60%;animation-delay:.1s;}
+    .wave-bar:nth-child(3){height:90%;animation-delay:.2s;}
+    .wave-bar:nth-child(4){height:70%;animation-delay:.15s;}
+    .wave-bar:nth-child(5){height:100%;animation-delay:.05s;}
+    .wave-bar:nth-child(6){height:80%;animation-delay:.3s;}
+    .wave-bar:nth-child(7){height:50%;animation-delay:.25s;}
+    .wave-bar:nth-child(8){height:90%;animation-delay:.1s;}
+    .wave-bar:nth-child(9){height:60%;animation-delay:.2s;}
+    .wave-bar:nth-child(10){height:30%;animation-delay:0s;}
+    .wave-bar:nth-child(11){height:70%;animation-delay:.15s;}
+    .wave-bar:nth-child(12){height:100%;animation-delay:.08s;}
+    .wave-bar:nth-child(13){height:55%;animation-delay:.22s;}
+    .wave-bar:nth-child(14){height:40%;animation-delay:.12s;}
+    .wave-bar:nth-child(15){height:20%;animation-delay:.05s;}
+    @keyframes wavePulse { 0%,100%{transform:scaleY(0.4);opacity:.7} 50%{transform:scaleY(1);opacity:1} }
+
+    .hero-stage h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #fbbf24, #f87171, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; z-index: 1; }
+
+    /* SEARCH */
+    .search-bar { max-width: 500px; margin: 20px auto 0; position: relative; }
+    .search-bar input { background: rgba(245,158,11,0.07); border: 1.5px solid rgba(245,158,11,0.3); border-radius: 50px; color: #e2e8f0; padding: 13px 20px 13px 48px; width: 100%; font-size: 15px; outline: none; transition: all .2s; }
+    .search-bar input:focus { border-color: #fbbf24; background: rgba(245,158,11,0.12); }
+    .search-bar input::placeholder { color: #4b5563; }
+    .search-bar i { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color: #fbbf24; font-size: 16px; }
+
+    /* INSTRUMENT FILTER */
+    .instrument-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+    .instr-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid rgba(245,158,11,0.25); background: rgba(245,158,11,0.07); color: #94a3b8; transition: all .2s; }
+    .instr-pill.active, .instr-pill:hover { background: rgba(245,158,11,0.2); border-color: #f59e0b; color: #fbbf24; }
+
+    /* NOW PLAYING STRIP */
+    .now-playing { background: linear-gradient(90deg, rgba(245,158,11,0.1), rgba(239,68,68,0.07)); border: 1px solid rgba(245,158,11,0.2); border-radius: 16px; padding: 16px 22px; margin-bottom: 32px; display: flex; align-items: center; gap: 16px; }
+    .np-icon { font-size: 32px; }
+    .np-text h6 { color: #fbbf24; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .np-text p { color: #94a3b8; font-size: 13px; margin: 0; }
+
+    /* GENRE BADGES */
+    .genre-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+    .genre-badge { padding: 7px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; border: 1px solid transparent; }
+    .genre-badge.pop { background: rgba(239,68,68,0.12); color: #f87171; border-color: rgba(239,68,68,0.2); }
+    .genre-badge.classical { background: rgba(139,92,246,0.12); color: #a78bfa; border-color: rgba(139,92,246,0.2); }
+    .genre-badge.jazz { background: rgba(245,158,11,0.12); color: #fbbf24; border-color: rgba(245,158,11,0.2); }
+    .genre-badge.rock { background: rgba(234,179,8,0.12); color: #facc15; border-color: rgba(234,179,8,0.2); }
+    .genre-badge.edm { background: rgba(14,165,233,0.12); color: #38bdf8; border-color: rgba(14,165,233,0.2); }
+    .genre-badge:hover { transform: scale(1.05); }
+
+    /* SKILL CARDS — vinyl/record style */
+    .skill-card { background: rgba(245,158,11,0.03); border: 1px solid rgba(245,158,11,0.1); border-radius: 18px; padding: 24px 20px; cursor: pointer; transition: all 0.25s; height: 100%; position: relative; overflow: hidden; }
+    .skill-card::after { content: ''; position: absolute; bottom: -30px; right: -30px; width: 80px; height: 80px; border-radius: 50%; border: 2px solid rgba(245,158,11,0.08); }
+    .skill-card:hover { background: rgba(245,158,11,0.09); border-color: rgba(245,158,11,0.35); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 24px rgba(245,158,11,0.08); }
+    .skill-emoji { font-size: 48px; margin-bottom: 12px; display: block; }
+    .skill-card h5 { color: white; font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+    .skill-card .desc { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+    .cat-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+    .has-file-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+    .author-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border-radius: 50px; padding: 4px 12px; font-size: 12px; color: #64748b; margin-top: 10px; }
+
+    .sort-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; border-radius: 8px; padding: 6px 12px; font-size: 13px; }
+    .sort-select option { background: #1e293b; }
+
+    /* MODAL */
+    .modal-content { background: #180810; border: 1px solid rgba(245,158,11,0.25); border-radius: 20px; color: #e2e8f0; }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .detail-section { background: rgba(245,158,11,0.04); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(245,158,11,0.1); }
+    .detail-section label { font-size: 10px; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+    .empty-state { text-align: center; padding: 80px 20px; }
+  </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">SkillSwap</a>
-      <a href="index.html" class="btn btn-light">← Về Trang chủ</a>
-    </div>
+
+<header class="header-nav">
+  <h2 style="margin:0;font-size:20px;color:white;font-weight:800;">🎵 SkillSwap</h2>
+  <nav>
+    <a href="index.html">Trang chủ</a>
+    <a href="khampha.html">Khám phá</a>
+    <a href="skill.html">Kỹ năng của tôi</a>
+    <a href="lienhe.html">Liên hệ</a>
   </nav>
+  <div id="user-header" style="color:white;font-size:13px;font-weight:600;"></div>
+</header>
 
-  <div style="height: 80px;"></div>
+<div class="container py-5">
 
-  <div class="container py-5">
-    <h1 class="text-center mb-5">🎵 Danh mục Âm Nhạc</h1>
-    <div class="row g-4" id="music-grid"></div>
+  <!-- HERO STAGE -->
+  <div class="hero-stage">
+    <div class="stage-lights">
+      <div style="font-size:68px;position:relative;z-index:1;">🎵</div>
+      <h1>Kỹ năng Âm Nhạc</h1>
+      <p class="text-muted mb-0" style="position:relative;z-index:1;">Guitar · Piano · Hát · Sản xuất nhạc · DJ · Nhạc lý</p>
+      <div class="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="search-bar">
+        <i class="bi bi-music-note-beamed"></i>
+        <input type="text" id="search-input" placeholder="Tìm nhạc cụ, thể loại, kỹ thuật...">
+      </div>
+      <div class="instrument-row">
+        <div class="instr-pill active" data-instr="">🎵 Tất cả</div>
+        <div class="instr-pill" data-instr="guitar">🎸 Guitar</div>
+        <div class="instr-pill" data-instr="piano">🎹 Piano</div>
+        <div class="instr-pill" data-instr="hát">🎤 Hát</div>
+        <div class="instr-pill" data-instr="trống">🥁 Trống</div>
+        <div class="instr-pill" data-instr="violin">🎻 Violin</div>
+        <div class="instr-pill" data-instr="sản xuất">🎛️ Sản xuất</div>
+      </div>
+    </div>
   </div>
 
-  <script src="SPCK.js"></script>
-  <script>
-    function loadMusicSkills() {
-      const skills = DB.getAll('skill_').filter(s => 
-        s.category === "Âm nhạc" || 
-        s.category === "Âm Nhạc" || 
-        s.category === "Music" ||
-        (s.tags && s.tags.some(t => t.toLowerCase().includes("nhạc")))
-      );
+  <!-- NOW PLAYING VIBE -->
+  <div class="now-playing">
+    <div class="np-icon">🎙️</div>
+    <div class="np-text">
+      <h6>Đang phát — SkillSwap Âm nhạc</h6>
+      <p>Kết nối với những người đam mê âm nhạc. Học nhạc cụ, cải thiện giọng hát, sáng tác và biểu diễn cùng cộng đồng.</p>
+    </div>
+  </div>
 
-      const container = document.getElementById('music-grid');
-      
-      container.innerHTML = skills.length ? skills.map(s => `
-        <div class="col-md-4 col-lg-3">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-              <div style="font-size: 60px; margin-bottom: 15px;">${s.emoji || '🎵'}</div>
-              <h5 class="card-title">${s.title}</h5>
-              <span class="badge bg-info">${s.category}</span>
-              <p class="card-text text-muted mt-3 small">${s.desc ? s.desc.substring(0, 90) + '...' : 'Không có mô tả'}</p>
-            </div>
+  <!-- GENRE BADGES -->
+  <div class="genre-grid">
+    <div class="genre-badge pop">🎤 Pop</div>
+    <div class="genre-badge classical">🎻 Cổ điển</div>
+    <div class="genre-badge jazz">🎷 Jazz</div>
+    <div class="genre-badge rock">🎸 Rock</div>
+    <div class="genre-badge edm">🎛️ EDM</div>
+    <div class="genre-badge" style="background:rgba(52,211,153,0.12);color:#34d399;border-color:rgba(52,211,153,0.2);">🎵 Dân ca</div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0 small"><i class="bi bi-music-note me-1"></i><span id="count-text">Đang tải...</span></p>
+    <div class="d-flex gap-2 align-items-center">
+      <small class="text-muted">Sắp xếp:</small>
+      <select class="sort-select" id="sort-select" onchange="renderSkills()">
+        <option value="newest">Mới nhất</option>
+        <option value="alpha">A → Z</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="row g-4" id="skills-grid">
+    <div class="col-12 text-center py-5">
+      <span class="spinner-border me-2" style="color:#f59e0b;"></span>Đang tải kỹ năng âm nhạc...
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <div style="font-size:70px;text-align:center;padding:14px 0;" id="detail-emoji">🎵</div>
+        <h3 class="text-center fw-bold mb-3" id="detail-title"></h3>
+        <div class="d-flex gap-2 mb-3 justify-content-center flex-wrap" id="detail-meta"></div>
+        <div class="detail-section">
+          <label><i class="bi bi-card-text me-1"></i>Mô tả chi tiết</label>
+          <p id="detail-desc" class="mb-0" style="line-height:1.8;white-space:pre-wrap;"></p>
+        </div>
+        <div class="detail-section" id="detail-file-section" style="display:none;">
+          <label><i class="bi bi-paperclip me-1"></i>Tài liệu đính kèm</label>
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <a id="detail-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm"><i class="bi bi-download me-1"></i>Tải xuống</a>
+            <button class="btn btn-sm" onclick="toggleFilePreview()" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;">
+              <i class="bi bi-eye me-1"></i><span id="preview-toggle-text">Xem nội dung</span>
+            </button>
+          </div>
+          <div id="file-preview-container" style="display:none;border-radius:12px;overflow:hidden;background:rgba(0,0,0,0.3);"></div>
+        </div>
+        <div class="detail-section">
+          <label><i class="bi bi-person me-1"></i>Tác giả</label>
+          <div class="d-flex align-items-center gap-3">
+            <div style="font-size:36px">👤</div>
+            <div><div class="fw-bold" id="detail-author"></div><small class="text-muted" id="detail-date"></small></div>
           </div>
         </div>
-      `).join('') : `
-        <div class="col-12 text-center py-5">
-          <h3>🎵 Chưa có kỹ năng Âm Nhạc nào</h3>
-          <p class="text-muted">Bạn có thể đăng kỹ năng mới trong phần "Kỹ năng của tôi"</p>
-        </div>`;
-    }
+        <div class="text-center mt-3">
+          <a href="lienhe.html" class="btn btn-primary px-5 fw-semibold"><i class="bi bi-chat-dots me-2"></i>Liên hệ để trao đổi</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    // Tự động load khi mở trang web
-    window.onload = loadMusicSkills;
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = { apiKey:"AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",authDomain:"bibilabu.firebaseapp.com",projectId:"bibilabu",storageBucket:"bibilabu.firebasestorage.app",messagingSenderId:"50186983635",appId:"1:50186983635:web:96bbe6ad497822a6591c26" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const MUSIC_CATS = ['Âm nhạc', 'Âm Nhạc', 'Music', 'âm nhạc'];
+  let allSkills=[], detailModal, currentFileUrl='', currentFileName='', previewVisible=false;
+  let activeInstr = '';
+
+  function esc(str){ return String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  onAuthStateChanged(auth,u=>{ document.getElementById('user-header').textContent=u?(u.displayName||u.email):''; });
+
+  async function loadSkills(){
+    try {
+      const snap=await getDocs(collection(db,'skills'));
+      allSkills=snap.docs.map(d=>({id:d.id,...d.data()}))
+        .filter(s=>s.status==='approved'&&(MUSIC_CATS.includes(s.category)||(s.tags&&s.tags.some(t=>t.toLowerCase().includes('nhạc')))))
+        .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      window.renderSkills();
+    } catch(e){
+      document.getElementById('skills-grid').innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">⚠️</div><h4>Lỗi tải dữ liệu</h4><p class="text-muted">${esc(e.message)}</p></div>`;
+    }
+  }
+
+  window.renderSkills=()=>{
+    const search=document.getElementById('search-input').value.toLowerCase();
+    const sort=document.getElementById('sort-select').value;
+    let filtered=allSkills.filter(s=>{
+      const matchS=!search||(s.title||'').toLowerCase().includes(search)||(s.desc||'').toLowerCase().includes(search)||(s.authorName||'').toLowerCase().includes(search);
+      const matchI=!activeInstr||(s.title||'').toLowerCase().includes(activeInstr)||(s.desc||'').toLowerCase().includes(activeInstr);
+      return matchS&&matchI;
+    });
+    if(sort==='alpha')filtered.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+    document.getElementById('count-text').textContent=`${filtered.length} kỹ năng âm nhạc`;
+    const grid=document.getElementById('skills-grid');
+    if(!filtered.length){grid.innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">🎵</div><h4>Chưa có kỹ năng phù hợp</h4><p class="text-muted">Hãy đăng kỹ năng âm nhạc đầu tiên!</p><a href="skill.html" class="btn btn-primary mt-2">Đăng kỹ năng</a></div>`;return;}
+    grid.innerHTML=filtered.map(s=>`
+      <div class="col-md-4 col-lg-3">
+        <div class="skill-card" onclick="openDetail('${s.id}')">
+          <span class="skill-emoji">${esc(s.emoji||'🎵')}</span>
+          <div class="d-flex gap-2 mb-2 flex-wrap">
+            <span class="cat-badge">🎵 ${esc(s.category)}</span>
+            ${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip"></i> Tài liệu</span>':''}
+          </div>
+          <h5>${esc(s.title)}</h5>
+          <p class="desc">${esc((s.desc||'').substring(0,100))}${(s.desc||'').length>100?'...':''}</p>
+          <div class="author-chip">👤 ${esc(s.authorName||'Ẩn danh')}</div>
+        </div>
+      </div>`).join('');
+  };
+
+  window.openDetail=(id)=>{
+    const s=allSkills.find(x=>x.id===id);if(!s)return;
+    document.getElementById('detail-emoji').textContent=s.emoji||'🎵';
+    document.getElementById('detail-title').textContent=s.title;
+    document.getElementById('detail-desc').textContent=s.desc||'Không có mô tả';
+    document.getElementById('detail-author').textContent=s.authorName||'Ẩn danh';
+    const date=s.createdAt?.toDate?s.createdAt.toDate().toLocaleDateString('vi-VN'):'---';
+    document.getElementById('detail-date').textContent='Đăng ngày '+date;
+    document.getElementById('detail-meta').innerHTML=`<span class="cat-badge">🎵 ${esc(s.category)}</span>${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip me-1"></i>Có tài liệu</span>':''}<span class="badge bg-success">✅ Đã duyệt</span>`;
+    previewVisible=false;currentFileUrl='';currentFileName='';
+    document.getElementById('file-preview-container').style.display='none';
+    document.getElementById('file-preview-container').innerHTML='';
+    document.getElementById('preview-toggle-text').textContent='Xem nội dung';
+    const fs=document.getElementById('detail-file-section');
+    if(s.fileUrl){fs.style.display='block';currentFileUrl=s.fileUrl;currentFileName=s.fileName||'tài liệu';document.getElementById('detail-file-link').href=s.fileUrl;document.getElementById('detail-file-link').innerHTML=`<i class="bi bi-download me-1"></i>${esc(currentFileName)}`;}
+    else fs.style.display='none';
+    if(!detailModal)detailModal=new bootstrap.Modal(document.getElementById('detailModal'));
+    detailModal.show();
+  };
+
+  window.toggleFilePreview=()=>{
+    const c=document.getElementById('file-preview-container'),t=document.getElementById('preview-toggle-text');
+    if(previewVisible){c.style.display='none';c.innerHTML='';t.textContent='Xem nội dung';previewVisible=false;return;}
+    const name=currentFileName.toLowerCase(),urlBase=currentFileUrl.toLowerCase().split('?')[0];
+    if(/\.pdf$/.test(name)||/\.pdf$/.test(urlBase))c.innerHTML=`<iframe src="${currentFileUrl}" style="width:100%;height:480px;border:none;border-radius:12px;"></iframe>`;
+    else if(/\.(png|jpg|jpeg|gif|webp|svg)$/.test(name)||/\.(png|jpg|jpeg|gif|webp|svg)$/.test(urlBase))c.innerHTML=`<img src="${currentFileUrl}" style="width:100%;border-radius:12px;max-height:480px;object-fit:contain;padding:12px;background:#000;">`;
+    else if(/\.(mp4|webm|ogg|mov)$/.test(name))c.innerHTML=`<video controls style="width:100%;border-radius:12px;max-height:380px;background:#000;"><source src="${currentFileUrl}"></video>`;
+    else if(/\.(mp3|wav|m4a)$/.test(name))c.innerHTML=`<div style="padding:20px;text-align:center;"><audio controls style="width:100%;"><source src="${currentFileUrl}"></audio></div>`;
+    else c.innerHTML=`<div style="padding:24px;text-align:center;color:#94a3b8;"><div style="font-size:48px">📄</div><p>Không thể xem trực tiếp.</p><a href="${currentFileUrl}" target="_blank" class="btn btn-outline-info btn-sm">Mở tab mới</a></div>`;
+    c.style.display='block';t.textContent='Ẩn nội dung';previewVisible=true;
+  };
+
+  document.querySelectorAll('.instr-pill').forEach(p=>{
+    p.addEventListener('click',()=>{
+      document.querySelectorAll('.instr-pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active'); activeInstr=p.dataset.instr; window.renderSkills();
+    });
+  });
+  document.getElementById('search-input').addEventListener('input',()=>window.renderSkills());
+  loadSkills();
+</script>
 </body>
 </html>

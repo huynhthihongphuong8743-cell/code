@@ -116,9 +116,15 @@
 
         <div class="detail-section" id="detail-file-section" style="display:none;">
           <label><i class="bi bi-paperclip me-1"></i>Tài liệu đính kèm</label>
-          <a id="detail-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm">
-            <i class="bi bi-download me-1"></i>Tải xuống tài liệu
-          </a>
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <a id="detail-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm">
+              <i class="bi bi-download me-1"></i>Tải xuống
+            </a>
+            <button class="btn btn-sm" id="preview-toggle-btn" onclick="toggleFilePreview()" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:#818cf8;">
+              <i class="bi bi-eye me-1"></i><span id="preview-toggle-text">Xem nội dung</span>
+            </button>
+          </div>
+          <div id="file-preview-container" style="display:none;border-radius:12px;overflow:hidden;background:rgba(0,0,0,0.3);"></div>
         </div>
 
         <div class="detail-section">
@@ -246,6 +252,10 @@
       </div>`).join('');
   };
 
+  let currentFileUrl = '';
+  let currentFileName = '';
+  let previewVisible = false;
+
   window.openDetail = (id) => {
     const s = allSkills.find(x => x.id === id);
     if (!s) return;
@@ -261,17 +271,72 @@
       ${s.fileUrl ? '<span class="has-file-badge"><i class="bi bi-paperclip me-1"></i>Có tài liệu</span>' : ''}
       <span class="badge bg-success">✅ Đã duyệt</span>`;
 
+    // Reset preview state
+    previewVisible = false;
+    currentFileUrl = '';
+    currentFileName = '';
+    document.getElementById('file-preview-container').style.display = 'none';
+    document.getElementById('file-preview-container').innerHTML = '';
+    document.getElementById('preview-toggle-text').textContent = 'Xem nội dung';
+
     const fileSection = document.getElementById('detail-file-section');
     if (s.fileUrl) {
       fileSection.style.display = 'block';
-      document.getElementById('detail-file-link').href = s.fileUrl;
-      document.getElementById('detail-file-link').textContent = '⬇️ Tải xuống: ' + (s.fileName || 'tài liệu');
+      currentFileUrl = s.fileUrl;
+      currentFileName = s.fileName || 'tài liệu';
+      const link = document.getElementById('detail-file-link');
+      link.href = s.fileUrl;
+      link.innerHTML = `<i class="bi bi-download me-1"></i>${escapeHtml(currentFileName)}`;
     } else {
       fileSection.style.display = 'none';
     }
 
     if (!detailModal) detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
     detailModal.show();
+  };
+
+  window.toggleFilePreview = () => {
+    const container = document.getElementById('file-preview-container');
+    const toggleText = document.getElementById('preview-toggle-text');
+
+    if (previewVisible) {
+      container.style.display = 'none';
+      container.innerHTML = '';
+      toggleText.textContent = 'Xem nội dung';
+      previewVisible = false;
+      return;
+    }
+
+    // Xác định loại file
+    const url = currentFileUrl.toLowerCase();
+    const name = currentFileName.toLowerCase();
+    const isPdf = name.endsWith('.pdf') || url.includes('.pdf');
+    const isImage = /\.(png|jpg|jpeg|gif|webp|svg)/.test(name) || /\.(png|jpg|jpeg|gif|webp|svg)/.test(url.split('?')[0]);
+    const isVideo = /\.(mp4|webm|ogg|mov)/.test(name);
+    const isAudio = /\.(mp3|wav|ogg|m4a)/.test(name);
+
+    if (isPdf) {
+      container.innerHTML = `<iframe src="${currentFileUrl}" style="width:100%;height:500px;border:none;border-radius:12px;" title="Xem tài liệu PDF"></iframe>`;
+    } else if (isImage) {
+      container.innerHTML = `<img src="${currentFileUrl}" alt="${escapeHtml(currentFileName)}" style="width:100%;border-radius:12px;max-height:500px;object-fit:contain;padding:12px;">`;
+    } else if (isVideo) {
+      container.innerHTML = `<video controls style="width:100%;border-radius:12px;max-height:400px;background:#000;">
+        <source src="${currentFileUrl}">Trình duyệt không hỗ trợ video này.</video>`;
+    } else if (isAudio) {
+      container.innerHTML = `<div style="padding:20px;text-align:center;">
+        <audio controls style="width:100%;"><source src="${currentFileUrl}">Trình duyệt không hỗ trợ audio.</audio>
+      </div>`;
+    } else {
+      container.innerHTML = `<div style="padding:24px;text-align:center;color:#94a3b8;">
+        <div style="font-size:48px;margin-bottom:12px;">📄</div>
+        <p>Không thể xem trực tiếp loại file này.</p>
+        <a href="${currentFileUrl}" target="_blank" class="btn btn-outline-info btn-sm">Mở trong tab mới</a>
+      </div>`;
+    }
+
+    container.style.display = 'block';
+    toggleText.textContent = 'Ẩn nội dung';
+    previewVisible = true;
   };
 
   // Search

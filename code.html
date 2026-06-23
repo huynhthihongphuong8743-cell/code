@@ -6,38 +6,329 @@
   <title>Lập Trình - SkillSwap</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="SPCK.css">
+  <style>
+    :root { --accent: #4f46e5; --accent2: #7c3aed; --glow: rgba(79,70,229,0.35); }
+    * { box-sizing: border-box; }
+    body { background: #0a0f1e; color: #e2e8f0; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
+
+    /* HEADER */
+    .header-nav { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: 600; transition: opacity .2s; }
+    .header-nav a:hover { opacity: 0.75; }
+
+    /* HERO - terminal style */
+    .hero-terminal { border-radius: 20px; overflow: hidden; margin-bottom: 40px; border: 1px solid rgba(79,70,229,0.3); box-shadow: 0 0 60px rgba(79,70,229,0.15); }
+    .terminal-bar { background: #1e1e2e; padding: 12px 20px; display: flex; align-items: center; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #f87171; } .dot-y { background: #fbbf24; } .dot-g { background: #34d399; }
+    .terminal-title { flex: 1; text-align: center; font-size: 13px; color: #64748b; }
+    .terminal-body { background: linear-gradient(160deg, #0f172a 60%, #1a0a2e); padding: 40px 32px; text-align: center; }
+    .terminal-body h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+    .terminal-body h1 span { background: linear-gradient(90deg, #818cf8, #a78bfa, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .code-line { font-family: monospace; font-size: 14px; color: #64748b; margin-bottom: 6px; }
+    .code-line .kw { color: #818cf8; } .code-line .str { color: #34d399; } .code-line .fn { color: #f472b6; }
+
+    /* SEARCH */
+    .search-bar { max-width: 500px; margin: 22px auto 0; position: relative; }
+    .search-bar input { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(79,70,229,0.4); border-radius: 50px; color: #e2e8f0; padding: 13px 20px 13px 48px; width: 100%; font-size: 15px; outline: none; transition: border-color .2s, background .2s; }
+    .search-bar input:focus { border-color: #6366f1; background: rgba(255,255,255,0.1); }
+    .search-bar input::placeholder { color: #4b5563; }
+    .search-bar i { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color: #6366f1; font-size: 16px; }
+
+    /* LANG PILLS */
+    .lang-pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+    .lang-pill { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid transparent; transition: all .2s; background: rgba(255,255,255,0.05); color: #94a3b8; }
+    .lang-pill:hover, .lang-pill.active { background: rgba(79,70,229,0.25); border-color: #6366f1; color: #a5b4fc; }
+
+    /* ROADMAP STRIP */
+    .roadmap-strip { background: linear-gradient(90deg, rgba(79,70,229,0.12), rgba(124,58,237,0.08)); border: 1px solid rgba(79,70,229,0.2); border-radius: 16px; padding: 20px 24px; margin-bottom: 36px; }
+    .roadmap-strip h6 { color: #818cf8; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .roadmap-steps { display: flex; gap: 0; align-items: center; flex-wrap: wrap; }
+    .step-node { text-align: center; padding: 8px 16px; background: rgba(99,102,241,0.12); border-radius: 10px; border: 1px solid rgba(99,102,241,0.25); min-width: 90px; }
+    .step-node .step-icon { font-size: 22px; }
+    .step-node .step-label { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+    .step-arrow { color: #4b5563; padding: 0 8px; font-size: 18px; }
+
+    /* SKILLS GRID */
+    .skill-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 24px 20px; cursor: pointer; transition: all 0.25s; height: 100%; position: relative; overflow: hidden; }
+    .skill-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #4f46e5, #7c3aed, #34d399); opacity: 0; transition: opacity .25s; }
+    .skill-card:hover { background: rgba(79,70,229,0.1); border-color: rgba(79,70,229,0.35); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 20px rgba(79,70,229,0.1); }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-emoji { font-size: 48px; margin-bottom: 12px; display: block; }
+    .skill-card h5 { color: white; font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+    .skill-card .desc { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+    .cat-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.25); }
+    .has-file-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+    .author-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border-radius: 50px; padding: 4px 12px; font-size: 12px; color: #64748b; margin-top: 10px; }
+
+    /* TOOLBAR */
+    .sort-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; border-radius: 8px; padding: 6px 12px; font-size: 13px; }
+    .sort-select option { background: #1e293b; }
+
+    /* MODAL */
+    .modal-content { background: #111827; border: 1px solid rgba(79,70,229,0.25); border-radius: 20px; color: #e2e8f0; }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .detail-section { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+    .detail-section label { font-size: 10px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+    .empty-state { text-align: center; padding: 80px 20px; }
+
+    /* FEATURED TOOLS */
+    .tools-strip { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+    .tool-chip { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px 14px; font-size: 13px; color: #94a3b8; }
+    .tool-chip span { color: #a5b4fc; font-weight: 600; }
+
+    /* TIP BOX */
+    .tip-box { background: linear-gradient(135deg, rgba(52,211,153,0.08), rgba(79,70,229,0.06)); border: 1px solid rgba(52,211,153,0.2); border-radius: 14px; padding: 16px 20px; margin-bottom: 28px; display: flex; gap: 14px; align-items: flex-start; }
+    .tip-icon { font-size: 28px; flex-shrink: 0; }
+    .tip-text { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+    .tip-text strong { color: #34d399; }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">SkillSwap</a>
-      <a href="index.html" class="btn btn-light">← Về Trang chủ</a>
-    </div>
-  </nav>
 
-  <div class="container py-5">
-    <h1 class="text-center mb-5">💻 Danh mục Lập Trình / Code</h1>
-    <div class="row g-4" id="code-grid"></div>
+<header class="header-nav">
+  <h2 style="margin:0;font-size:20px;color:white;font-weight:800;">💻 SkillSwap</h2>
+  <nav>
+    <a href="index.html">Trang chủ</a>
+    <a href="khampha.html">Khám phá</a>
+    <a href="skill.html">Kỹ năng của tôi</a>
+    <a href="lienhe.html">Liên hệ</a>
+  </nav>
+  <div id="user-header" style="color:white;font-size:13px;font-weight:600;"></div>
+</header>
+
+<div class="container py-5">
+
+  <!-- HERO TERMINAL -->
+  <div class="hero-terminal">
+    <div class="terminal-bar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <div class="terminal-title">skillswap ~ coding</div>
+    </div>
+    <div class="terminal-body">
+      <div class="code-line"><span class="kw">const</span> skills = <span class="kw">await</span> <span class="fn">fetchFrom</span>(<span class="str">'SkillSwap'</span>);</div>
+      <div class="code-line"><span class="kw">return</span> skills.<span class="fn">filter</span>(s => s.category === <span class="str">'Lập trình'</span>);</div>
+      <h1 class="mt-3 mb-0"><span>Kỹ năng Lập Trình</span></h1>
+      <p class="text-muted mt-2 mb-0">Học lập trình từ cộng đồng — Web, App, AI, Backend và nhiều hơn nữa</p>
+      <div class="search-bar">
+        <i class="bi bi-terminal"></i>
+        <input type="text" id="search-input" placeholder="Tìm theo ngôn ngữ, framework, chủ đề...">
+      </div>
+      <div class="lang-pills" id="lang-pills">
+        <div class="lang-pill active" data-lang="">Tất cả</div>
+        <div class="lang-pill" data-lang="python">🐍 Python</div>
+        <div class="lang-pill" data-lang="javascript">🟨 JavaScript</div>
+        <div class="lang-pill" data-lang="web">🌐 Web</div>
+        <div class="lang-pill" data-lang="ai">🤖 AI/ML</div>
+        <div class="lang-pill" data-lang="mobile">📱 Mobile</div>
+        <div class="lang-pill" data-lang="java">☕ Java</div>
+      </div>
+    </div>
   </div>
 
-  <script src="SPCK.js"></script>
-  <script>
-    function loadCodeSkills() {
-      const skills = DB.getAll('skill_').filter(s => 
-        ["Lập trình", "Code", "Programming"].includes(s.category));
-      const container = document.getElementById('code-grid');
-      container.innerHTML = skills.length ? skills.map(s => `
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h3>${s.emoji || '💻'} ${s.title}</h3>
-              <p>${s.desc.substring(0, 100)}...</p>
+  <!-- LEARNING ROADMAP -->
+  <div class="roadmap-strip">
+    <h6><i class="bi bi-map me-2"></i>Lộ trình học lập trình phổ biến</h6>
+    <div class="roadmap-steps">
+      <div class="step-node"><div class="step-icon">🌱</div><div class="step-label">Cơ bản</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step-node"><div class="step-icon">🏗️</div><div class="step-label">Cấu trúc DL</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step-node"><div class="step-icon">🌐</div><div class="step-label">Web/App</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step-node"><div class="step-icon">🗄️</div><div class="step-label">Database</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step-node"><div class="step-icon">🚀</div><div class="step-label">Deploy</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step-node"><div class="step-icon">🤖</div><div class="step-label">AI/ML</div></div>
+    </div>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="tip-box">
+    <div class="tip-icon">💡</div>
+    <div class="tip-text"><strong>Mẹo học lập trình:</strong> Cách học hiệu quả nhất là xây dựng dự án thực tế. Chọn một ý tưởng nhỏ, code từng bước, tìm người mentor — đó chính xác là những gì SkillSwap giúp bạn làm!</div>
+  </div>
+  <div class="tools-strip">
+    <div class="tool-chip">💻 <span>VS Code</span></div>
+    <div class="tool-chip">🐙 <span>GitHub</span></div>
+    <div class="tool-chip">🐳 <span>Docker</span></div>
+    <div class="tool-chip">🔥 <span>Firebase</span></div>
+    <div class="tool-chip">⚛️ <span>React</span></div>
+    <div class="tool-chip">🐍 <span>Python</span></div>
+    <div class="tool-chip">☁️ <span>Cloud</span></div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0 small"><i class="bi bi-grid me-1"></i><span id="count-text">Đang tải...</span></p>
+    <div class="d-flex gap-2 align-items-center">
+      <small class="text-muted">Sắp xếp:</small>
+      <select class="sort-select" id="sort-select" onchange="renderSkills()">
+        <option value="newest">Mới nhất</option>
+        <option value="alpha">A → Z</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="row g-4" id="skills-grid">
+    <div class="col-12 text-center py-5">
+      <span class="spinner-border text-primary me-2"></span>Đang tải kỹ năng lập trình...
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <div style="font-size:70px;text-align:center;padding:14px 0;" id="detail-emoji">💻</div>
+        <h3 class="text-center fw-bold mb-3" id="detail-title"></h3>
+        <div class="d-flex gap-2 mb-3 justify-content-center flex-wrap" id="detail-meta"></div>
+        <div class="detail-section">
+          <label><i class="bi bi-card-text me-1"></i>Mô tả chi tiết</label>
+          <p id="detail-desc" class="mb-0" style="line-height:1.8;white-space:pre-wrap;"></p>
+        </div>
+        <div class="detail-section" id="detail-file-section" style="display:none;">
+          <label><i class="bi bi-paperclip me-1"></i>Tài liệu đính kèm</label>
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <a id="detail-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm"><i class="bi bi-download me-1"></i>Tải xuống</a>
+            <button class="btn btn-sm" onclick="toggleFilePreview()" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:#818cf8;">
+              <i class="bi bi-eye me-1"></i><span id="preview-toggle-text">Xem nội dung</span>
+            </button>
+          </div>
+          <div id="file-preview-container" style="display:none;border-radius:12px;overflow:hidden;background:rgba(0,0,0,0.3);"></div>
+        </div>
+        <div class="detail-section">
+          <label><i class="bi bi-person me-1"></i>Tác giả</label>
+          <div class="d-flex align-items-center gap-3">
+            <div style="font-size:36px">👤</div>
+            <div>
+              <div class="fw-bold" id="detail-author"></div>
+              <small class="text-muted" id="detail-date"></small>
             </div>
           </div>
-        </div>`).join('') : '<p class="text-center">Chưa có kỹ năng Lập trình nào!.</p>';
+        </div>
+        <div class="text-center mt-3">
+          <a href="lienhe.html" class="btn btn-primary px-5 fw-semibold">
+            <i class="bi bi-chat-dots me-2"></i>Liên hệ để trao đổi
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = { apiKey:"AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",authDomain:"bibilabu.firebaseapp.com",projectId:"bibilabu",storageBucket:"bibilabu.firebasestorage.app",messagingSenderId:"50186983635",appId:"1:50186983635:web:96bbe6ad497822a6591c26" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const CODE_CATS = ['Lập trình', 'Code', 'Programming', 'Lập Trình'];
+  let allSkills = [], detailModal, currentFileUrl='', currentFileName='', previewVisible=false;
+  let activeLang = '';
+
+  function esc(str){ return String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  onAuthStateChanged(auth, u => { document.getElementById('user-header').textContent = u?(u.displayName||u.email):''; });
+
+  async function loadSkills() {
+    try {
+      const snap = await getDocs(collection(db,'skills'));
+      allSkills = snap.docs.map(d=>({id:d.id,...d.data()}))
+        .filter(s=>s.status==='approved' && CODE_CATS.includes(s.category))
+        .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      window.renderSkills();
+    } catch(e) {
+      document.getElementById('skills-grid').innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">⚠️</div><h4>Lỗi tải dữ liệu</h4><p class="text-muted">${esc(e.message)}</p></div>`;
     }
-    window.onload = loadCodeSkills;
-  </script>
+  }
+
+  window.renderSkills = () => {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    const sort = document.getElementById('sort-select').value;
+    let filtered = allSkills.filter(s => {
+      const matchSearch = !search || (s.title||'').toLowerCase().includes(search)||(s.desc||'').toLowerCase().includes(search)||(s.authorName||'').toLowerCase().includes(search);
+      const matchLang = !activeLang || (s.title||'').toLowerCase().includes(activeLang)||(s.desc||'').toLowerCase().includes(activeLang);
+      return matchSearch && matchLang;
+    });
+    if(sort==='alpha') filtered.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+    document.getElementById('count-text').textContent=`${filtered.length} kỹ năng lập trình`;
+    const grid=document.getElementById('skills-grid');
+    if(!filtered.length){
+      grid.innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">💻</div><h4>Chưa có kỹ năng nào phù hợp</h4><p class="text-muted">Thử tìm kiếm khác hoặc đăng kỹ năng đầu tiên!</p><a href="skill.html" class="btn btn-primary mt-2">Đăng kỹ năng</a></div>`;
+      return;
+    }
+    grid.innerHTML=filtered.map(s=>`
+      <div class="col-md-4 col-lg-3">
+        <div class="skill-card" onclick="openDetail('${s.id}')">
+          <span class="skill-emoji">${esc(s.emoji||'💻')}</span>
+          <div class="d-flex gap-2 mb-2 flex-wrap">
+            <span class="cat-badge">💻 ${esc(s.category)}</span>
+            ${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip"></i> Tài liệu</span>':''}
+          </div>
+          <h5>${esc(s.title)}</h5>
+          <p class="desc">${esc((s.desc||'').substring(0,100))}${(s.desc||'').length>100?'...':''}</p>
+          <div class="author-chip">👤 ${esc(s.authorName||'Ẩn danh')}</div>
+        </div>
+      </div>`).join('');
+  };
+
+  window.openDetail = (id) => {
+    const s=allSkills.find(x=>x.id===id); if(!s)return;
+    document.getElementById('detail-emoji').textContent=s.emoji||'💻';
+    document.getElementById('detail-title').textContent=s.title;
+    document.getElementById('detail-desc').textContent=s.desc||'Không có mô tả';
+    document.getElementById('detail-author').textContent=s.authorName||'Ẩn danh';
+    const date=s.createdAt?.toDate?s.createdAt.toDate().toLocaleDateString('vi-VN'):'---';
+    document.getElementById('detail-date').textContent='Đăng ngày '+date;
+    document.getElementById('detail-meta').innerHTML=`<span class="cat-badge">💻 ${esc(s.category)}</span>${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip me-1"></i>Có tài liệu</span>':''}<span class="badge bg-success">✅ Đã duyệt</span>`;
+    previewVisible=false;currentFileUrl='';currentFileName='';
+    document.getElementById('file-preview-container').style.display='none';
+    document.getElementById('file-preview-container').innerHTML='';
+    document.getElementById('preview-toggle-text').textContent='Xem nội dung';
+    const fs=document.getElementById('detail-file-section');
+    if(s.fileUrl){fs.style.display='block';currentFileUrl=s.fileUrl;currentFileName=s.fileName||'tài liệu';document.getElementById('detail-file-link').href=s.fileUrl;document.getElementById('detail-file-link').innerHTML=`<i class="bi bi-download me-1"></i>${esc(currentFileName)}`;}
+    else fs.style.display='none';
+    if(!detailModal)detailModal=new bootstrap.Modal(document.getElementById('detailModal'));
+    detailModal.show();
+  };
+
+  window.toggleFilePreview=()=>{
+    const c=document.getElementById('file-preview-container'),t=document.getElementById('preview-toggle-text');
+    if(previewVisible){c.style.display='none';c.innerHTML='';t.textContent='Xem nội dung';previewVisible=false;return;}
+    const name=currentFileName.toLowerCase(),urlBase=currentFileUrl.toLowerCase().split('?')[0];
+    if(/\.pdf$/.test(name)||/\.pdf$/.test(urlBase))c.innerHTML=`<iframe src="${currentFileUrl}" style="width:100%;height:480px;border:none;border-radius:12px;"></iframe>`;
+    else if(/\.(png|jpg|jpeg|gif|webp|svg)$/.test(name)||/\.(png|jpg|jpeg|gif|webp|svg)$/.test(urlBase))c.innerHTML=`<img src="${currentFileUrl}" style="width:100%;border-radius:12px;max-height:480px;object-fit:contain;padding:12px;background:#000;">`;
+    else if(/\.(mp4|webm|ogg|mov)$/.test(name))c.innerHTML=`<video controls style="width:100%;border-radius:12px;max-height:380px;background:#000;"><source src="${currentFileUrl}"></video>`;
+    else if(/\.(mp3|wav|m4a)$/.test(name))c.innerHTML=`<div style="padding:20px;text-align:center;"><audio controls style="width:100%;"><source src="${currentFileUrl}"></audio></div>`;
+    else c.innerHTML=`<div style="padding:24px;text-align:center;color:#94a3b8;"><div style="font-size:48px">📄</div><p>Không thể xem trực tiếp.</p><a href="${currentFileUrl}" target="_blank" class="btn btn-outline-info btn-sm">Mở tab mới</a></div>`;
+    c.style.display='block';t.textContent='Ẩn nội dung';previewVisible=true;
+  };
+
+  // LANG PILLS
+  document.querySelectorAll('.lang-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.lang-pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active');
+      activeLang = pill.dataset.lang;
+      window.renderSkills();
+    });
+  });
+
+  document.getElementById('search-input').addEventListener('input', ()=>window.renderSkills());
+  loadSkills();
+</script>
 </body>
 </html>

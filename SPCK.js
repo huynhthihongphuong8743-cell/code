@@ -162,7 +162,7 @@ window.logout = async () => {
 };
 
 // =========================
-// DARK MODE
+// DARK MODES
 // =========================
 function initDarkMode() {
   if (localStorage.getItem('darkMode') === '1') document.body.classList.add('dark-mode');

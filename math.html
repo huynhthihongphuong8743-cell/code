@@ -6,41 +6,297 @@
   <title>Toán Học - SkillSwap</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="SPCK.css">
+  <style>
+    :root { --blue: #0ea5e9; --blue2: #2563eb; --glow: rgba(14,165,233,0.25); }
+    body { background: #030d1a; color: #e2e8f0; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
+
+    .header-nav { background: linear-gradient(135deg, #0ea5e9, #2563eb); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: 600; }
+    .header-nav a:hover { opacity: 0.8; }
+
+    /* HERO — chalkboard style */
+    .hero-chalk { background: linear-gradient(135deg, #0c1a2e, #0a2040); border-radius: 24px; padding: 48px 32px 36px; margin-bottom: 36px; text-align: center; border: 1px solid rgba(14,165,233,0.2); position: relative; overflow: hidden; }
+    .hero-chalk::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(14,165,233,0.03) 30px, rgba(14,165,233,0.03) 31px); pointer-events: none; }
+    .hero-chalk h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* FLOATING FORMULAS */
+    .formula-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 18px 0 10px; }
+    .formula-chip { background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2); border-radius: 10px; padding: 7px 16px; font-family: 'Georgia', serif; font-size: 14px; color: #38bdf8; letter-spacing: 0.3px; }
+
+    /* SEARCH */
+    .search-bar { max-width: 500px; margin: 20px auto 0; position: relative; }
+    .search-bar input { background: rgba(14,165,233,0.07); border: 1.5px solid rgba(14,165,233,0.3); border-radius: 50px; color: #e2e8f0; padding: 13px 20px 13px 48px; width: 100%; font-size: 15px; outline: none; transition: all .2s; }
+    .search-bar input:focus { border-color: #38bdf8; background: rgba(14,165,233,0.12); }
+    .search-bar input::placeholder { color: #4b5563; }
+    .search-bar i { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color: #38bdf8; font-size: 16px; }
+
+    /* DIFFICULTY TABS */
+    .diff-tabs { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+    .diff-tab { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid transparent; transition: all .2s; background: rgba(255,255,255,0.04); color: #94a3b8; }
+    .diff-tab[data-diff="all"].active { background: rgba(14,165,233,0.2); border-color: #0ea5e9; color: #38bdf8; }
+    .diff-tab[data-diff="co-ban"].active { background: rgba(52,211,153,0.15); border-color: #34d399; color: #34d399; }
+    .diff-tab[data-diff="trung-cap"].active { background: rgba(251,191,36,0.15); border-color: #fbbf24; color: #fbbf24; }
+    .diff-tab[data-diff="nang-cao"].active { background: rgba(248,113,113,0.15); border-color: #f87171; color: #f87171; }
+    .diff-tab:hover { background: rgba(14,165,233,0.12); border-color: rgba(14,165,233,0.4); color: #38bdf8; }
+
+    /* TOPIC MAP */
+    .topic-map { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.15); border-radius: 16px; padding: 20px 24px; margin-bottom: 32px; }
+    .topic-map h6 { color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .topic-nodes { display: flex; gap: 10px; flex-wrap: wrap; }
+    .topic-node { background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2); border-radius: 10px; padding: 8px 14px; font-size: 13px; color: #7dd3fc; cursor: pointer; transition: all .2s; }
+    .topic-node:hover { background: rgba(14,165,233,0.2); border-color: #38bdf8; }
+    .topic-node.active { background: rgba(14,165,233,0.25); border-color: #0ea5e9; color: #38bdf8; font-weight: 700; }
+
+    /* SKILL CARDS — blueprint style */
+    .skill-card { background: rgba(14,165,233,0.03); border: 1px solid rgba(14,165,233,0.12); border-radius: 18px; padding: 24px 20px; cursor: pointer; transition: all 0.25s; height: 100%; position: relative; }
+    .skill-card:hover { background: rgba(14,165,233,0.09); border-color: rgba(14,165,233,0.35); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 24px rgba(14,165,233,0.1); }
+    .skill-emoji { font-size: 48px; margin-bottom: 12px; display: block; }
+    .skill-card h5 { color: white; font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+    .skill-card .desc { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+    .cat-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: rgba(14,165,233,0.12); color: #38bdf8; border: 1px solid rgba(14,165,233,0.25); }
+    .has-file-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.22); }
+    .author-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border-radius: 50px; padding: 4px 12px; font-size: 12px; color: #64748b; margin-top: 10px; }
+
+    /* QUOTE BOX */
+    .quote-box { background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(37,99,235,0.05)); border-left: 3px solid #0ea5e9; border-radius: 0 12px 12px 0; padding: 14px 20px; margin-bottom: 28px; font-style: italic; color: #7dd3fc; font-size: 14px; }
+    .quote-box cite { display: block; color: #4b5563; font-style: normal; font-size: 12px; margin-top: 6px; }
+
+    /* TOOLBAR */
+    .sort-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; border-radius: 8px; padding: 6px 12px; font-size: 13px; }
+    .sort-select option { background: #1e293b; }
+
+    /* MODAL */
+    .modal-content { background: #0c1a2e; border: 1px solid rgba(14,165,233,0.25); border-radius: 20px; color: #e2e8f0; }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .detail-section { background: rgba(14,165,233,0.04); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(14,165,233,0.1); }
+    .detail-section label { font-size: 10px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+    .empty-state { text-align: center; padding: 80px 20px; }
+  </style>
 </head>
 <body>
-  <!-- Navbar sẽ được copy từ trang chủ sau -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">SkillSwap</a>
-      <a href="index.html" class="btn btn-light">← Về Trang chủ</a>
-    </div>
-  </nav>
 
-  <div class="container py-5">
-    <h1 class="text-center mb-5">📐 Danh mục Toán Học</h1>
-    <div class="row g-4" id="math-grid">
-      <!-- JS sẽ load kỹ năng Toán -->
+<header class="header-nav">
+  <h2 style="margin:0;font-size:20px;color:white;font-weight:800;">📐 SkillSwap</h2>
+  <nav>
+    <a href="index.html">Trang chủ</a>
+    <a href="khampha.html">Khám phá</a>
+    <a href="skill.html">Kỹ năng của tôi</a>
+    <a href="lienhe.html">Liên hệ</a>
+  </nav>
+  <div id="user-header" style="color:white;font-size:13px;font-weight:600;"></div>
+</header>
+
+<div class="container py-5">
+
+  <!-- HERO CHALK -->
+  <div class="hero-chalk">
+    <div style="font-size:72px;margin-bottom:12px;">📐</div>
+    <h1>Kỹ năng Toán Học</h1>
+    <p class="text-muted mb-0">Giải tích · Đại số · Thống kê · Hình học · Xác suất</p>
+    <div class="formula-row">
+      <div class="formula-chip">∫ f(x)dx</div>
+      <div class="formula-chip">E = mc²</div>
+      <div class="formula-chip">P(A∩B) = P(A)·P(B)</div>
+      <div class="formula-chip">∑ₙ₌₁∞ 1/n²= π²/6</div>
+      <div class="formula-chip">Δy/Δx → dy/dx</div>
+    </div>
+    <div class="search-bar">
+      <i class="bi bi-search"></i>
+      <input type="text" id="search-input" placeholder="Tìm đại số, giải tích, thống kê...">
+    </div>
+    <div class="diff-tabs">
+      <div class="diff-tab active" data-diff="all">📊 Tất cả</div>
+      <div class="diff-tab" data-diff="co-ban">🌱 Cơ bản</div>
+      <div class="diff-tab" data-diff="trung-cap">📘 Trung cấp</div>
+      <div class="diff-tab" data-diff="nang-cao">🔥 Nâng cao</div>
     </div>
   </div>
 
-  <script src="SPCK.js"></script>
-  <script>
-    // Load kỹ năng thuộc danh mục Toán
-    function loadMathSkills() {
-      const skills = DB.getAll('skill_').filter(s => s.category === "Toán" || s.category === "Toán Học");
-      const container = document.getElementById('math-grid');
-      container.innerHTML = skills.length ? skills.map(s => `
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h3>${s.emoji || '📐'} ${s.title}</h3>
-              <p>${s.desc.substring(0, 100)}...</p>
-            </div>
+  <!-- QUOTE -->
+  <div class="quote-box">
+    "Toán học là ngôn ngữ mà Vũ trụ được viết bằng."
+    <cite>— Galileo Galilei</cite>
+  </div>
+
+  <!-- TOPIC MAP -->
+  <div class="topic-map">
+    <h6><i class="bi bi-diagram-3 me-2"></i>Chủ đề toán học</h6>
+    <div class="topic-nodes">
+      <div class="topic-node active" data-topic="">🔢 Tất cả</div>
+      <div class="topic-node" data-topic="đại số">➕ Đại số</div>
+      <div class="topic-node" data-topic="giải tích">📈 Giải tích</div>
+      <div class="topic-node" data-topic="hình học">📐 Hình học</div>
+      <div class="topic-node" data-topic="thống kê">📊 Thống kê</div>
+      <div class="topic-node" data-topic="xác suất">🎲 Xác suất</div>
+      <div class="topic-node" data-topic="số học">🔢 Số học</div>
+      <div class="topic-node" data-topic="ma trận">🔲 Ma trận</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0 small"><i class="bi bi-calculator me-1"></i><span id="count-text">Đang tải...</span></p>
+    <div class="d-flex gap-2 align-items-center">
+      <small class="text-muted">Sắp xếp:</small>
+      <select class="sort-select" id="sort-select" onchange="renderSkills()">
+        <option value="newest">Mới nhất</option>
+        <option value="alpha">A → Z</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="row g-4" id="skills-grid">
+    <div class="col-12 text-center py-5">
+      <span class="spinner-border text-info me-2"></span>Đang tải kỹ năng toán học...
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <div style="font-size:70px;text-align:center;padding:14px 0;" id="detail-emoji">📐</div>
+        <h3 class="text-center fw-bold mb-3" id="detail-title"></h3>
+        <div class="d-flex gap-2 mb-3 justify-content-center flex-wrap" id="detail-meta"></div>
+        <div class="detail-section">
+          <label><i class="bi bi-card-text me-1"></i>Mô tả chi tiết</label>
+          <p id="detail-desc" class="mb-0" style="line-height:1.8;white-space:pre-wrap;"></p>
+        </div>
+        <div class="detail-section" id="detail-file-section" style="display:none;">
+          <label><i class="bi bi-paperclip me-1"></i>Tài liệu đính kèm</label>
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <a id="detail-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm"><i class="bi bi-download me-1"></i>Tải xuống</a>
+            <button class="btn btn-sm" onclick="toggleFilePreview()" style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;">
+              <i class="bi bi-eye me-1"></i><span id="preview-toggle-text">Xem nội dung</span>
+            </button>
           </div>
-        </div>`).join('') : '<p class="text-center">Chưa có kỹ năng Toán nào!.</p>';
+          <div id="file-preview-container" style="display:none;border-radius:12px;overflow:hidden;background:rgba(0,0,0,0.3);"></div>
+        </div>
+        <div class="detail-section">
+          <label><i class="bi bi-person me-1"></i>Tác giả</label>
+          <div class="d-flex align-items-center gap-3">
+            <div style="font-size:36px">👤</div>
+            <div><div class="fw-bold" id="detail-author"></div><small class="text-muted" id="detail-date"></small></div>
+          </div>
+        </div>
+        <div class="text-center mt-3">
+          <a href="lienhe.html" class="btn btn-primary px-5 fw-semibold"><i class="bi bi-chat-dots me-2"></i>Liên hệ để trao đổi</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = { apiKey:"AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",authDomain:"bibilabu.firebaseapp.com",projectId:"bibilabu",storageBucket:"bibilabu.firebasestorage.app",messagingSenderId:"50186983635",appId:"1:50186983635:web:96bbe6ad497822a6591c26" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const MATH_CATS = ['Toán học', 'Toán Học', 'Toán', 'Math', 'Mathematics'];
+  let allSkills=[], detailModal, currentFileUrl='', currentFileName='', previewVisible=false;
+  let activeTopic = '', activeDiff = 'all';
+
+  function esc(str){ return String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  onAuthStateChanged(auth,u=>{ document.getElementById('user-header').textContent=u?(u.displayName||u.email):''; });
+
+  async function loadSkills(){
+    try {
+      const snap=await getDocs(collection(db,'skills'));
+      allSkills=snap.docs.map(d=>({id:d.id,...d.data()}))
+        .filter(s=>s.status==='approved' && MATH_CATS.includes(s.category))
+        .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      window.renderSkills();
+    } catch(e){
+      document.getElementById('skills-grid').innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">⚠️</div><h4>Lỗi tải dữ liệu</h4><p class="text-muted">${esc(e.message)}</p></div>`;
     }
-    window.onload = loadMathSkills;
-  </script>
+  }
+
+  window.renderSkills=()=>{
+    const search=document.getElementById('search-input').value.toLowerCase();
+    const sort=document.getElementById('sort-select').value;
+    let filtered=allSkills.filter(s=>{
+      const matchS=!search||(s.title||'').toLowerCase().includes(search)||(s.desc||'').toLowerCase().includes(search)||(s.authorName||'').toLowerCase().includes(search);
+      const matchT=!activeTopic||(s.title||'').toLowerCase().includes(activeTopic)||(s.desc||'').toLowerCase().includes(activeTopic);
+      const matchD=activeDiff==='all'||(s.desc||'').toLowerCase().includes(activeDiff)||(s.title||'').toLowerCase().includes(activeDiff);
+      return matchS&&matchT&&matchD;
+    });
+    if(sort==='alpha')filtered.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+    document.getElementById('count-text').textContent=`${filtered.length} kỹ năng toán học`;
+    const grid=document.getElementById('skills-grid');
+    if(!filtered.length){grid.innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">📐</div><h4>Chưa có kỹ năng phù hợp</h4><p class="text-muted">Hãy thử tìm kiếm khác!</p><a href="skill.html" class="btn btn-primary mt-2">Đăng kỹ năng</a></div>`;return;}
+    grid.innerHTML=filtered.map(s=>`
+      <div class="col-md-4 col-lg-3">
+        <div class="skill-card" onclick="openDetail('${s.id}')">
+          <span class="skill-emoji">${esc(s.emoji||'📐')}</span>
+          <div class="d-flex gap-2 mb-2 flex-wrap">
+            <span class="cat-badge">📐 ${esc(s.category)}</span>
+            ${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip"></i> Tài liệu</span>':''}
+          </div>
+          <h5>${esc(s.title)}</h5>
+          <p class="desc">${esc((s.desc||'').substring(0,100))}${(s.desc||'').length>100?'...':''}</p>
+          <div class="author-chip">👤 ${esc(s.authorName||'Ẩn danh')}</div>
+        </div>
+      </div>`).join('');
+  };
+
+  window.openDetail=(id)=>{
+    const s=allSkills.find(x=>x.id===id);if(!s)return;
+    document.getElementById('detail-emoji').textContent=s.emoji||'📐';
+    document.getElementById('detail-title').textContent=s.title;
+    document.getElementById('detail-desc').textContent=s.desc||'Không có mô tả';
+    document.getElementById('detail-author').textContent=s.authorName||'Ẩn danh';
+    const date=s.createdAt?.toDate?s.createdAt.toDate().toLocaleDateString('vi-VN'):'---';
+    document.getElementById('detail-date').textContent='Đăng ngày '+date;
+    document.getElementById('detail-meta').innerHTML=`<span class="cat-badge">📐 ${esc(s.category)}</span>${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip me-1"></i>Có tài liệu</span>':''}<span class="badge bg-success">✅ Đã duyệt</span>`;
+    previewVisible=false;currentFileUrl='';currentFileName='';
+    document.getElementById('file-preview-container').style.display='none';
+    document.getElementById('file-preview-container').innerHTML='';
+    document.getElementById('preview-toggle-text').textContent='Xem nội dung';
+    const fs=document.getElementById('detail-file-section');
+    if(s.fileUrl){fs.style.display='block';currentFileUrl=s.fileUrl;currentFileName=s.fileName||'tài liệu';document.getElementById('detail-file-link').href=s.fileUrl;document.getElementById('detail-file-link').innerHTML=`<i class="bi bi-download me-1"></i>${esc(currentFileName)}`;}
+    else fs.style.display='none';
+    if(!detailModal)detailModal=new bootstrap.Modal(document.getElementById('detailModal'));
+    detailModal.show();
+  };
+
+  window.toggleFilePreview=()=>{
+    const c=document.getElementById('file-preview-container'),t=document.getElementById('preview-toggle-text');
+    if(previewVisible){c.style.display='none';c.innerHTML='';t.textContent='Xem nội dung';previewVisible=false;return;}
+    const name=currentFileName.toLowerCase(),urlBase=currentFileUrl.toLowerCase().split('?')[0];
+    if(/\.pdf$/.test(name)||/\.pdf$/.test(urlBase))c.innerHTML=`<iframe src="${currentFileUrl}" style="width:100%;height:480px;border:none;border-radius:12px;"></iframe>`;
+    else if(/\.(png|jpg|jpeg|gif|webp|svg)$/.test(name)||/\.(png|jpg|jpeg|gif|webp|svg)$/.test(urlBase))c.innerHTML=`<img src="${currentFileUrl}" style="width:100%;border-radius:12px;max-height:480px;object-fit:contain;padding:12px;background:#000;">`;
+    else if(/\.(mp4|webm|ogg|mov)$/.test(name))c.innerHTML=`<video controls style="width:100%;border-radius:12px;max-height:380px;background:#000;"><source src="${currentFileUrl}"></video>`;
+    else if(/\.(mp3|wav|m4a)$/.test(name))c.innerHTML=`<div style="padding:20px;text-align:center;"><audio controls style="width:100%;"><source src="${currentFileUrl}"></audio></div>`;
+    else c.innerHTML=`<div style="padding:24px;text-align:center;color:#94a3b8;"><div style="font-size:48px">📄</div><p>Không thể xem trực tiếp.</p><a href="${currentFileUrl}" target="_blank" class="btn btn-outline-info btn-sm">Mở tab mới</a></div>`;
+    c.style.display='block';t.textContent='Ẩn nội dung';previewVisible=true;
+  };
+
+  document.querySelectorAll('.topic-node').forEach(n=>{
+    n.addEventListener('click',()=>{
+      document.querySelectorAll('.topic-node').forEach(x=>x.classList.remove('active'));
+      n.classList.add('active'); activeTopic=n.dataset.topic; window.renderSkills();
+    });
+  });
+  document.querySelectorAll('.diff-tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.diff-tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active'); activeDiff=t.dataset.diff; window.renderSkills();
+    });
+  });
+  document.getElementById('search-input').addEventListener('input',()=>window.renderSkills());
+  loadSkills();
+</script>
 </body>
 </html>

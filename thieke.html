@@ -6,38 +6,327 @@
   <title>Thiết Kế - SkillSwap</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="SPCK.css">
+  <style>
+    :root { --pink: #ec4899; --purple: #a855f7; }
+    body { background: #0e0516; color: #e2e8f0; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
+
+    .header-nav { background: linear-gradient(135deg, #ec4899, #a855f7); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { color: white; text-decoration: none; margin: 0 10px; font-weight: 600; }
+    .header-nav a:hover { opacity: 0.8; }
+
+    /* HERO — moodboard / canvas feel */
+    .hero-canvas { border-radius: 24px; margin-bottom: 36px; overflow: hidden; border: 1px solid rgba(236,72,153,0.2); position: relative; }
+    .canvas-bg { background: linear-gradient(135deg, #1a0528 0%, #0e0516 50%, #200a30 100%); padding: 48px 32px 36px; text-align: center; position: relative; }
+
+    /* Scattered color blobs */
+    .blob { position: absolute; border-radius: 50%; filter: blur(40px); pointer-events: none; }
+    .blob-1 { width: 200px; height: 200px; background: rgba(236,72,153,0.2); top: -40px; left: -40px; }
+    .blob-2 { width: 180px; height: 180px; background: rgba(168,85,247,0.15); bottom: -30px; right: -30px; }
+    .blob-3 { width: 120px; height: 120px; background: rgba(245,158,11,0.1); top: 20px; right: 30%; }
+
+    .canvas-bg h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #f9a8d4, #c084fc, #f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; position: relative; z-index: 1; }
+
+    /* COLOR PALETTE strip */
+    .palette-strip { display: flex; gap: 6px; justify-content: center; margin: 16px 0 6px; position: relative; z-index: 1; }
+    .swatch { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform .2s; }
+    .swatch:hover { transform: scale(1.2); }
+
+    /* SEARCH */
+    .search-bar { max-width: 500px; margin: 20px auto 0; position: relative; z-index: 1; }
+    .search-bar input { background: rgba(236,72,153,0.07); border: 1.5px solid rgba(236,72,153,0.3); border-radius: 50px; color: #e2e8f0; padding: 13px 20px 13px 48px; width: 100%; font-size: 15px; outline: none; transition: all .2s; }
+    .search-bar input:focus { border-color: #f472b6; background: rgba(236,72,153,0.12); }
+    .search-bar input::placeholder { color: #4b5563; }
+    .search-bar i { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color: #f472b6; font-size: 16px; }
+
+    /* STYLE PILLS */
+    .style-pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; position: relative; z-index: 1; }
+    .style-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid rgba(236,72,153,0.25); background: rgba(236,72,153,0.06); color: #94a3b8; transition: all .2s; }
+    .style-pill.active, .style-pill:hover { background: rgba(236,72,153,0.18); border-color: #ec4899; color: #f9a8d4; }
+
+    /* SOFTWARE ROW */
+    .software-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+    .sw-chip { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 8px 14px; font-size: 13px; color: #94a3b8; transition: all .2s; cursor: default; }
+    .sw-chip:hover { border-color: rgba(236,72,153,0.3); color: #f472b6; }
+    .sw-chip span { color: #c084fc; font-weight: 600; }
+
+    /* INSPIRATION STRIP */
+    .inspo-strip { background: linear-gradient(135deg, rgba(236,72,153,0.08), rgba(168,85,247,0.06)); border: 1px solid rgba(236,72,153,0.15); border-radius: 16px; padding: 18px 22px; margin-bottom: 32px; display: flex; gap: 16px; align-items: center; }
+    .inspo-icon { font-size: 36px; }
+    .inspo-text h6 { color: #f472b6; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .inspo-text p { color: #94a3b8; font-size: 13px; margin: 0; }
+
+    /* CATEGORY TABS */
+    .cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .cat-tab { padding: 7px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: #64748b; transition: all .2s; }
+    .cat-tab.active { background: rgba(236,72,153,0.2); border-color: #ec4899; color: #f472b6; }
+
+    /* SKILL CARDS — gallery/portfolio style */
+    .skill-card { background: rgba(236,72,153,0.03); border: 1px solid rgba(236,72,153,0.1); border-radius: 18px; padding: 24px 20px; cursor: pointer; transition: all 0.25s; height: 100%; position: relative; overflow: hidden; }
+    .skill-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(236,72,153,0.05), rgba(168,85,247,0.03)); opacity: 0; transition: opacity .25s; border-radius: 18px; }
+    .skill-card:hover { border-color: rgba(236,72,153,0.35); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 24px rgba(236,72,153,0.08); }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-emoji { font-size: 48px; margin-bottom: 12px; display: block; position: relative; z-index: 1; }
+    .skill-card h5 { color: white; font-weight: 700; font-size: 16px; margin-bottom: 8px; position: relative; z-index: 1; }
+    .skill-card .desc { color: #94a3b8; font-size: 13px; line-height: 1.6; position: relative; z-index: 1; }
+    .cat-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: rgba(236,72,153,0.12); color: #f472b6; border: 1px solid rgba(236,72,153,0.25); }
+    .has-file-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.22); }
+    .author-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border-radius: 50px; padding: 4px 12px; font-size: 12px; color: #64748b; margin-top: 10px; position: relative; z-index: 1; }
+
+    .sort-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; border-radius: 8px; padding: 6px 12px; font-size: 13px; }
+    .sort-select option { background: #1e293b; }
+
+    /* MODAL */
+    .modal-content { background: #130820; border: 1px solid rgba(236,72,153,0.25); border-radius: 20px; color: #e2e8f0; }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .detail-section { background: rgba(236,72,153,0.04); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(236,72,153,0.1); }
+    .detail-section label { font-size: 10px; font-weight: 700; color: #f472b6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+    .empty-state { text-align: center; padding: 80px 20px; }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">SkillSwap</a>
-      <a href="index.html" class="btn btn-light">← Về Trang chủ</a>
-    </div>
-  </nav>
 
-  <div class="container py-5">
-    <h1 class="text-center mb-5">🎨 Danh mục Thiết Kế</h1>
-    <div class="row g-4" id="design-grid"></div>
+<header class="header-nav">
+  <h2 style="margin:0;font-size:20px;color:white;font-weight:800;">🎨 SkillSwap</h2>
+  <nav>
+    <a href="index.html">Trang chủ</a>
+    <a href="khampha.html">Khám phá</a>
+    <a href="skill.html">Kỹ năng của tôi</a>
+    <a href="lienhe.html">Liên hệ</a>
+  </nav>
+  <div id="user-header" style="color:white;font-size:13px;font-weight:600;"></div>
+</header>
+
+<div class="container py-5">
+
+  <!-- HERO CANVAS -->
+  <div class="hero-canvas">
+    <div class="canvas-bg">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+      <div style="font-size:68px;position:relative;z-index:1;">🎨</div>
+      <h1>Kỹ năng Thiết Kế</h1>
+      <p class="text-muted mb-0" style="position:relative;z-index:1;">UI/UX · Đồ họa · Minh họa · Brand identity · Motion Design</p>
+      <div class="palette-strip">
+        <div class="swatch" style="background:#ec4899;" title="Pink"></div>
+        <div class="swatch" style="background:#a855f7;" title="Purple"></div>
+        <div class="swatch" style="background:#3b82f6;" title="Blue"></div>
+        <div class="swatch" style="background:#10b981;" title="Green"></div>
+        <div class="swatch" style="background:#f59e0b;" title="Amber"></div>
+        <div class="swatch" style="background:#ef4444;" title="Red"></div>
+        <div class="swatch" style="background:#f8fafc;" title="White"></div>
+        <div class="swatch" style="background:#1e293b;" title="Dark"></div>
+      </div>
+      <div class="search-bar">
+        <i class="bi bi-palette"></i>
+        <input type="text" id="search-input" placeholder="Tìm UI/UX, đồ họa, Figma, Photoshop...">
+      </div>
+      <div class="style-pills">
+        <div class="style-pill active" data-style="">🎨 Tất cả</div>
+        <div class="style-pill" data-style="ui">📱 UI/UX</div>
+        <div class="style-pill" data-style="đồ họa">🖼️ Đồ họa</div>
+        <div class="style-pill" data-style="minh họa">✏️ Minh họa</div>
+        <div class="style-pill" data-style="logo">🔤 Logo/Brand</div>
+        <div class="style-pill" data-style="3d">🌐 3D</div>
+        <div class="style-pill" data-style="motion">🎬 Motion</div>
+      </div>
+    </div>
   </div>
 
-  <script src="SPCK.js"></script>
-  <script>
-    function loadDesignSkills() {
-      const skills = DB.getAll('skill_').filter(s => 
-        ["Thiết kế", "Design", "Graphic"].includes(s.category));
-      const container = document.getElementById('design-grid');
-      container.innerHTML = skills.length ? skills.map(s => `
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h3>${s.emoji || '🎨'} ${s.title}</h3>
-              <p>${s.desc.substring(0, 100)}...</p>
-            </div>
+  <!-- INSPIRATION STRIP -->
+  <div class="inspo-strip">
+    <div class="inspo-icon">✨</div>
+    <div class="inspo-text">
+      <h6>Cộng đồng thiết kế sáng tạo</h6>
+      <p>Từ UI/UX cho app di động đến branding cho thương hiệu — chia sẻ và học hỏi từ những nhà thiết kế đam mê trong cộng đồng SkillSwap.</p>
+    </div>
+  </div>
+
+  <!-- SOFTWARE -->
+  <div class="software-row">
+    <div class="sw-chip">🎨 <span>Figma</span></div>
+    <div class="sw-chip">🖌️ <span>Photoshop</span></div>
+    <div class="sw-chip">📐 <span>Illustrator</span></div>
+    <div class="sw-chip">🎬 <span>After Effects</span></div>
+    <div class="sw-chip">📦 <span>Blender</span></div>
+    <div class="sw-chip">🖼️ <span>Canva</span></div>
+    <div class="sw-chip">⚡ <span>Framer</span></div>
+  </div>
+
+  <!-- CAT TABS -->
+  <div class="cat-tabs">
+    <div class="cat-tab active" data-cat="">📂 Tất cả</div>
+    <div class="cat-tab" data-cat="ui">📱 UI/UX Design</div>
+    <div class="cat-tab" data-cat="graphic">🖼️ Graphic Design</div>
+    <div class="cat-tab" data-cat="brand">🏷️ Branding</div>
+    <div class="cat-tab" data-cat="motion">🎬 Motion</div>
+    <div class="cat-tab" data-cat="3d">🌐 3D/Game Art</div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0 small"><i class="bi bi-brush me-1"></i><span id="count-text">Đang tải...</span></p>
+    <div class="d-flex gap-2 align-items-center">
+      <small class="text-muted">Sắp xếp:</small>
+      <select class="sort-select" id="sort-select" onchange="renderSkills()">
+        <option value="newest">Mới nhất</option>
+        <option value="alpha">A → Z</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="row g-4" id="skills-grid">
+    <div class="col-12 text-center py-5">
+      <span class="spinner-border me-2" style="color:#ec4899;"></span>Đang tải kỹ năng thiết kế...
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <div style="font-size:70px;text-align:center;padding:14px 0;" id="detail-emoji">🎨</div>
+        <h3 class="text-center fw-bold mb-3" id="detail-title"></h3>
+        <div class="d-flex gap-2 mb-3 justify-content-center flex-wrap" id="detail-meta"></div>
+        <div class="detail-section">
+          <label><i class="bi bi-card-text me-1"></i>Mô tả chi tiết</label>
+          <p id="detail-desc" class="mb-0" style="line-height:1.8;white-space:pre-wrap;"></p>
+        </div>
+        <div class="detail-section" id="detail-file-section" style="display:none;">
+          <label><i class="bi bi-paperclip me-1"></i>Tài liệu đính kèm</label>
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <a id="detail-file-link" href="#" target="_blank" class="btn btn-outline-info btn-sm"><i class="bi bi-download me-1"></i>Tải xuống</a>
+            <button class="btn btn-sm" onclick="toggleFilePreview()" style="background:rgba(236,72,153,0.12);border:1px solid rgba(236,72,153,0.3);color:#f472b6;">
+              <i class="bi bi-eye me-1"></i><span id="preview-toggle-text">Xem nội dung</span>
+            </button>
           </div>
-        </div>`).join('') : '<p class="text-center">Chưa có kỹ năng Thiết kế nào!.</p>';
+          <div id="file-preview-container" style="display:none;border-radius:12px;overflow:hidden;background:rgba(0,0,0,0.3);"></div>
+        </div>
+        <div class="detail-section">
+          <label><i class="bi bi-person me-1"></i>Tác giả</label>
+          <div class="d-flex align-items-center gap-3">
+            <div style="font-size:36px">👤</div>
+            <div><div class="fw-bold" id="detail-author"></div><small class="text-muted" id="detail-date"></small></div>
+          </div>
+        </div>
+        <div class="text-center mt-3">
+          <a href="lienhe.html" class="btn btn-primary px-5 fw-semibold"><i class="bi bi-chat-dots me-2"></i>Liên hệ để trao đổi</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = { apiKey:"AIzaSyBV1A0CyWn-_Rfr14tRnBDdSOWjW2e64Fg",authDomain:"bibilabu.firebaseapp.com",projectId:"bibilabu",storageBucket:"bibilabu.firebasestorage.app",messagingSenderId:"50186983635",appId:"1:50186983635:web:96bbe6ad497822a6591c26" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const DESIGN_CATS = ['Thiết kế', 'Thiết Kế', 'Design', 'Graphic', 'UI/UX'];
+  let allSkills=[], detailModal, currentFileUrl='', currentFileName='', previewVisible=false;
+  let activeStyle = '', activeCat = '';
+
+  function esc(str){ return String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  onAuthStateChanged(auth,u=>{ document.getElementById('user-header').textContent=u?(u.displayName||u.email):''; });
+
+  async function loadSkills(){
+    try {
+      const snap=await getDocs(collection(db,'skills'));
+      allSkills=snap.docs.map(d=>({id:d.id,...d.data()}))
+        .filter(s=>s.status==='approved'&&DESIGN_CATS.includes(s.category))
+        .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      window.renderSkills();
+    } catch(e){
+      document.getElementById('skills-grid').innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">⚠️</div><h4>Lỗi tải dữ liệu</h4><p class="text-muted">${esc(e.message)}</p></div>`;
     }
-    window.onload = loadDesignSkills;
-  </script>
+  }
+
+  window.renderSkills=()=>{
+    const search=document.getElementById('search-input').value.toLowerCase();
+    const sort=document.getElementById('sort-select').value;
+    let filtered=allSkills.filter(s=>{
+      const matchS=!search||(s.title||'').toLowerCase().includes(search)||(s.desc||'').toLowerCase().includes(search)||(s.authorName||'').toLowerCase().includes(search);
+      const matchSt=!activeStyle||(s.title||'').toLowerCase().includes(activeStyle)||(s.desc||'').toLowerCase().includes(activeStyle);
+      const matchC=!activeCat||(s.title||'').toLowerCase().includes(activeCat)||(s.desc||'').toLowerCase().includes(activeCat);
+      return matchS&&matchSt&&matchC;
+    });
+    if(sort==='alpha')filtered.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+    document.getElementById('count-text').textContent=`${filtered.length} kỹ năng thiết kế`;
+    const grid=document.getElementById('skills-grid');
+    if(!filtered.length){grid.innerHTML=`<div class="col-12 empty-state"><div style="font-size:64px">🎨</div><h4>Chưa có kỹ năng phù hợp</h4><p class="text-muted">Hãy đăng kỹ năng thiết kế đầu tiên!</p><a href="skill.html" class="btn btn-primary mt-2">Đăng kỹ năng</a></div>`;return;}
+    grid.innerHTML=filtered.map(s=>`
+      <div class="col-md-4 col-lg-3">
+        <div class="skill-card" onclick="openDetail('${s.id}')">
+          <span class="skill-emoji">${esc(s.emoji||'🎨')}</span>
+          <div class="d-flex gap-2 mb-2 flex-wrap">
+            <span class="cat-badge">🎨 ${esc(s.category)}</span>
+            ${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip"></i> Tài liệu</span>':''}
+          </div>
+          <h5>${esc(s.title)}</h5>
+          <p class="desc">${esc((s.desc||'').substring(0,100))}${(s.desc||'').length>100?'...':''}</p>
+          <div class="author-chip">👤 ${esc(s.authorName||'Ẩn danh')}</div>
+        </div>
+      </div>`).join('');
+  };
+
+  window.openDetail=(id)=>{
+    const s=allSkills.find(x=>x.id===id);if(!s)return;
+    document.getElementById('detail-emoji').textContent=s.emoji||'🎨';
+    document.getElementById('detail-title').textContent=s.title;
+    document.getElementById('detail-desc').textContent=s.desc||'Không có mô tả';
+    document.getElementById('detail-author').textContent=s.authorName||'Ẩn danh';
+    const date=s.createdAt?.toDate?s.createdAt.toDate().toLocaleDateString('vi-VN'):'---';
+    document.getElementById('detail-date').textContent='Đăng ngày '+date;
+    document.getElementById('detail-meta').innerHTML=`<span class="cat-badge">🎨 ${esc(s.category)}</span>${s.fileUrl?'<span class="has-file-badge"><i class="bi bi-paperclip me-1"></i>Có tài liệu</span>':''}<span class="badge bg-success">✅ Đã duyệt</span>`;
+    previewVisible=false;currentFileUrl='';currentFileName='';
+    document.getElementById('file-preview-container').style.display='none';
+    document.getElementById('file-preview-container').innerHTML='';
+    document.getElementById('preview-toggle-text').textContent='Xem nội dung';
+    const fs=document.getElementById('detail-file-section');
+    if(s.fileUrl){fs.style.display='block';currentFileUrl=s.fileUrl;currentFileName=s.fileName||'tài liệu';document.getElementById('detail-file-link').href=s.fileUrl;document.getElementById('detail-file-link').innerHTML=`<i class="bi bi-download me-1"></i>${esc(currentFileName)}`;}
+    else fs.style.display='none';
+    if(!detailModal)detailModal=new bootstrap.Modal(document.getElementById('detailModal'));
+    detailModal.show();
+  };
+
+  window.toggleFilePreview=()=>{
+    const c=document.getElementById('file-preview-container'),t=document.getElementById('preview-toggle-text');
+    if(previewVisible){c.style.display='none';c.innerHTML='';t.textContent='Xem nội dung';previewVisible=false;return;}
+    const name=currentFileName.toLowerCase(),urlBase=currentFileUrl.toLowerCase().split('?')[0];
+    if(/\.pdf$/.test(name)||/\.pdf$/.test(urlBase))c.innerHTML=`<iframe src="${currentFileUrl}" style="width:100%;height:480px;border:none;border-radius:12px;"></iframe>`;
+    else if(/\.(png|jpg|jpeg|gif|webp|svg)$/.test(name)||/\.(png|jpg|jpeg|gif|webp|svg)$/.test(urlBase))c.innerHTML=`<img src="${currentFileUrl}" style="width:100%;border-radius:12px;max-height:480px;object-fit:contain;padding:12px;background:#000;">`;
+    else if(/\.(mp4|webm|ogg|mov)$/.test(name))c.innerHTML=`<video controls style="width:100%;border-radius:12px;max-height:380px;background:#000;"><source src="${currentFileUrl}"></video>`;
+    else if(/\.(mp3|wav|m4a)$/.test(name))c.innerHTML=`<div style="padding:20px;text-align:center;"><audio controls style="width:100%;"><source src="${currentFileUrl}"></audio></div>`;
+    else c.innerHTML=`<div style="padding:24px;text-align:center;color:#94a3b8;"><div style="font-size:48px">📄</div><p>Không thể xem trực tiếp.</p><a href="${currentFileUrl}" target="_blank" class="btn btn-outline-info btn-sm">Mở tab mới</a></div>`;
+    c.style.display='block';t.textContent='Ẩn nội dung';previewVisible=true;
+  };
+
+  document.querySelectorAll('.style-pill').forEach(p=>{
+    p.addEventListener('click',()=>{
+      document.querySelectorAll('.style-pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active'); activeStyle=p.dataset.style; window.renderSkills();
+    });
+  });
+  document.querySelectorAll('.cat-tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.cat-tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active'); activeCat=t.dataset.cat; window.renderSkills();
+    });
+  });
+  document.getElementById('search-input').addEventListener('input',()=>window.renderSkills());
+  loadSkills();
+</script>
 </body>
 </html>
